@@ -2,10 +2,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client();
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
-
 const { prefix, token } = require('./config.json');
-
-var commands = ["ketaootetaan","miika","cyanide", "lmao"];
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -47,6 +44,9 @@ function getStreamer(u = "https://wind-bow.glitch.me/twitch-api/streams/cyanidep
 ---------- commands --------------
 * uudelle komennolle luodaan uusi case, casen nimi on commandin nimi
 */
+
+// Tähän lisätään aina uudet commandit niin näkyy !commands listassa.
+var commands = ["ketaootetaan","miika","cyanide", "lmao"];
 
 client.on('message', message => 
 {
