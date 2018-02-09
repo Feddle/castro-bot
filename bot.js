@@ -7,7 +7,7 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-function getStreamer(u = "https://wind-bow.glitch.me/twitch-api/streams/cyanideplaysgames") {
+function getStreamer(twitchUser, u = "https://wind-bow.glitch.me/twitch-api/streams/" + twitchUser ) {
     
     var xhr = new XMLHttpRequest();
     xhr.open('GET', u, false);
@@ -41,14 +41,15 @@ function getStreamer(u = "https://wind-bow.glitch.me/twitch-api/streams/cyanidep
 
 /*
 ---------- commands --------------
-* uusi komento: kopioi else if rakenne ja täytä
+* uusi komento: kopioi uusi else if rakenne ja täytä (ennen viimeistä elseä)
 */
 
 // Tähän lisätään aina uudet commandit niin näkyy !commands listassa.
-var commands = ["ketaootetaan","miika","cyanide", "lmao"];
+var commands = ["ketaootetaan","miika", "twitch <username>"];
 
 client.on('message', message => 
 {
+
     if (message.content.startsWith(`${prefix}commands`)) 
     {
         message.channel.send(commands.toString());
@@ -61,14 +62,13 @@ client.on('message', message =>
     {
         message.channel.send('Miika on homo.');
     }
-    else if (message.content.startsWith(`${prefix}cyanide`)) 
+    else if (message.content.startsWith(`${prefix}twitch`)) 
     {
-        var text = getStreamer();
+        // Extract twitch user from command
+        var sentence = message.content.split(' ');
+        var twitchUser = sentence[1];
+        var text = getStreamer(twitchUser);
         message.channel.send(text);
-    }
-    else if (message.content.startsWith(`${prefix}lmao`)) 
-    {
-        message.channel.send('LMFAO!');
     }
 });
 
