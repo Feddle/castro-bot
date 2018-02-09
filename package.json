@@ -4,6 +4,8 @@
   "description": "first bot",
   "main": "bot.js",
   "dependencies": {
-    "discord.js": "^11.3.0"
+    "discord.io": "^2.5.3",
+    "discord.js": "^11.3.0",
+    "winston": "^2.4.0"
   }
 }
