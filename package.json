@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "first bot",
   "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
   "dependencies": {
     "discord.js": "^11.3.0",
     "xmlhttprequest": "^1.8.0"
