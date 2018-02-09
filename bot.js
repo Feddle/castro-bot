@@ -1,43 +1,50 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const {prefix} = require('./config.json');
+const fetch = require('node-fetch');
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-function getStreamer(twitchUser, u = "https://wind-bow.glitch.me/twitch-api/streams/" + twitchUser ) {
-    
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', u, false);
-    xhr.responseType = 'json';    
-    var textResponse;
-    xhr.onload = function(e) {
-        if(xhr.readyState === 4) {
-            if(xhr.status === 200) {
-              var products = JSON.parse(xhr.responseText);                           
 
-              var link = products["stream"]["channel"]["url"];
-              var game = products["stream"]["channel"]["game"];
-              var status = products["stream"]["channel"]["status"];
-              var displayName = products["stream"]["channel"]["display_name"];
-              var logo = products["stream"]["channel"]["logo"];
-              
-              textResponse = displayName + " is streaming " + game + " - " + status + "\n" + link;
-              
-            }
-            else {
-               console.error(xhr.statusText);
-            }
-        }
-    };
-    xhr.onerror = function (e) {
-        console.error(xhr.statusText);
-    };
-    xhr.send();
-    return textResponse;
+function getStreamer(twitchUser, url = "https://wind-bow.glitch.me/twitch-api/streams/" + twitchUser ) {
+
+    return fetch(url)
+      .then(handleTwitchResponse)      
+      .catch(error => console.log(error));     
+      
 }
+
+function handleTwitchResponse(response) {
+    var textResponse;
+    return response.json()
+        .then(json => {
+          if (response.ok) {
+            if(json["stream"] == null) {                
+                var link = json["url"];            
+                var displayName = json["display_name"];
+                var logo = json["logo"];                      
+                textResponse = displayName + " is offline";      
+            } else {
+                var link = json["stream"]["channel"]["url"];
+                var game = json["stream"]["channel"]["game"];
+                var status = json["stream"]["channel"]["status"];
+                var displayName = json["stream"]["channel"]["display_name"];
+                var logo = json["stream"]["channel"]["logo"];    
+                textResponse = displayName + " is streaming " + game + "\n" + status + "\n" + link;            
+                return textResponse;
+            }
+          } else {
+            return Promise.reject(Object.assign({}, json, {
+              status: response.status,
+              statusText: response.statusText
+            }))
+          }
+        })
+}
+
+
 
 /*
 ---------- commands --------------
@@ -68,8 +75,7 @@ client.on('message', message =>
         var sentence = message.content.split(' ');
         var twitchUser = sentence[1];
 
-        var text = getStreamer(twitchUser);
-        message.channel.send(text);
+        getStreamer(twitchUser).then(response => message.channel.send(response));        
     }
 });
 
