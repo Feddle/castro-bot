@@ -3,7 +3,8 @@ const client = new Discord.Client();
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 
-var auth = require('./auth.json');
+//const config = require('./config.json');
+const { prefix, token } = require('./config.json');
 
 var commands = [];
 
@@ -41,6 +42,32 @@ function getStreamer(u = "https://wind-bow.glitch.me/twitch-api/streams/cyanidep
 ---------- commands --------------
 * uudelle komennolle luodaan uusi case, casen nimi on commandin nimi
 */
+
+client.on('message', message => 
+{
+    if (message.content.startsWith(`${prefix}commands`)) 
+    {
+        message.channel.send(commands.toString());
+    }
+    else if (message.content.startsWith(`${prefix}ketaootetaan`)) 
+    {
+        commands.push('ketaootetaan');
+        message.channel.send('Roopea odotettu joku 4h kohta.');
+    }
+    else if (message.content.startsWith(`${prefix}miika`)) 
+    {
+        commands.push('miika');
+        message.channel.send('Miika on homo.');
+    }
+    else if (message.content.startsWith(`${prefix}cyanide`)) 
+    {
+        commands.push('cyanide');
+        var text = getStreamer();
+        message.channel.send(text);
+    }
+});
+
+/*
 client.on('message', message => {
     if (message.content.substring(0,1) == '!')
     {
@@ -78,5 +105,7 @@ client.on('message', message => {
         }
     }
   });
+  */
 
-client.login(auth.token);
+//client.login(config.token);
+client.login(token);
