@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
-const {prefix} = require('./config.json');
+const {prefix, token} = require('./config.json');
 const fetch = require('node-fetch');
 
 client.on('ready', () => {
@@ -25,7 +25,8 @@ function handleTwitchResponse(response) {
                 var link = json["url"];            
                 var displayName = json["display_name"];
                 var logo = json["logo"];                      
-                textResponse = displayName + " is offline";      
+                textResponse = displayName + " is offline";
+                return textResponse;      
             } else {
                 var link = json["stream"]["channel"]["url"];
                 var game = json["stream"]["channel"]["game"];
@@ -79,4 +80,4 @@ client.on('message', message =>
     }
 });
 
-client.login(process.env.BOT_TOKEN);
+client.login(token);
