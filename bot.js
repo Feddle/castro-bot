@@ -24,7 +24,7 @@ function getStreamer(twitchUser, u = "https://wind-bow.glitch.me/twitch-api/stre
               var displayName = products["stream"]["channel"]["display_name"];
               var logo = products["stream"]["channel"]["logo"];
               
-              textResponse = displayName + " is streaming " + game + "-" + status + "\n" + link;
+              textResponse = displayName + " is streaming " + game + " - " + status + "\n" + link;
               
             }
             else {
@@ -41,7 +41,7 @@ function getStreamer(twitchUser, u = "https://wind-bow.glitch.me/twitch-api/stre
 
 /*
 ---------- commands --------------
-* uusi komento: kopioi uusi else if rakenne ja täytä (ennen viimeistä elseä)
+* uusi komento: kopioi uusi else if rakenne ja täytä
 */
 
 // Tähän lisätään aina uudet commandit niin näkyy !commands listassa.
@@ -67,6 +67,7 @@ client.on('message', message =>
         // Extract twitch user from command
         var sentence = message.content.split(' ');
         var twitchUser = sentence[1];
+        
         var text = getStreamer(twitchUser);
         message.channel.send(text);
     }
