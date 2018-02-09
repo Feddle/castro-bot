@@ -5,8 +5,7 @@ var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 var auth = require('./auth.json');
 
-// uudet komennot pitää lisätä myös tähän
-var commands = ["ketaootetaan", "asd", "miika", "cyanide"];
+var commands = [];
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -34,9 +33,8 @@ function getStreamer(u = "https://wind-bow.glitch.me/twitch-api/streams/cyanidep
       var logo = products["stream"]["channel"]["logo"];
       
       var textResponse = logo + " " + displayName + " is streaming " + game + "-" + status + "\n" + link;
-      return textResponse;
-    
     }
+    return textResponse;
 }
 
 /*
@@ -59,19 +57,23 @@ client.on('message', message => {
         
             case 'ketaootetaan' :
                 message.channel.send('Roopea odotettu joku 4h kohta.');
+                commands.push('ketaootetaan');
                 break;
 
             case 'asd' :
                 message.channel.send('ASDASDASDASD');
+                commands.push('asd');
                 break;
 
             case 'miika' :
                 message.channel.send('Miika on homo.');
+                commands.push('miika');
                 break;
             
             case 'cyanide' :
                 var text = getStreamer();
                 message.channel.send(text);
+                commands.push('cyanide');
                 break;
         }
     }
