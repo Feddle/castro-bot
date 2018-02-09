@@ -15,26 +15,32 @@ client.on('ready', () => {
 function getStreamer(u = "https://wind-bow.glitch.me/twitch-api/streams/cyanideplaysgames") {
     
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', u);
-    xhr.responseType = 'json';
+    xhr.open('GET', u, false);
+    xhr.responseType = 'json';    
+    var textResponse;
+    xhr.onload = function(e) {
+        if(xhr.readyState === 4) {
+            if(xhr.status === 200) {
+              var products = JSON.parse(xhr.responseText);                           
+
+              var link = products["stream"]["channel"]["url"];
+              var game = products["stream"]["channel"]["game"];
+              var status = products["stream"]["channel"]["status"];
+              var displayName = products["stream"]["channel"]["display_name"];
+              var logo = products["stream"]["channel"]["logo"];
+              
+              textResponse = displayName + " is streaming " + game + "-" + status + "\n" + link;
+              
+            }
+            else {
+               console.error(xhr.statusText);
+            }
+        }      
+    };
+    xhr.onerror = function (e) {
+        console.error(xhr.statusText);
+    };
     xhr.send();
-    
-    xhr.onload = function() {
-
-      //var products = JSON.parse(xhr.response);
-      //var products = xhr.response;
-      var products = JSON.parse(xhr.responseText);
-      
-      console.log(products);
-
-      var link = products["stream"]["channel"]["url"];
-      var game = products["stream"]["channel"]["game"];
-      var status = products["stream"]["channel"]["status"];
-      var displayName = products["stream"]["channel"]["display_name"];
-      var logo = products["stream"]["channel"]["logo"];
-      
-      var textResponse = logo + " " + displayName + " is streaming " + game + "-" + status + "\n" + link;
-    }
     return textResponse;
 }
 
