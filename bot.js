@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const client = new Discord.Client();
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-const { prefix, token } = require('./config.json');
+const {prefix} = require('./config.json');
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -67,10 +67,10 @@ client.on('message', message =>
         // Extract twitch user from command
         var sentence = message.content.split(' ');
         var twitchUser = sentence[1];
-        
+
         var text = getStreamer(twitchUser);
         message.channel.send(text);
     }
 });
 
-client.login(token);
+client.login(process.env.BOT_TOKEN);
