@@ -1,0 +1,9 @@
+{
+  "name": "stoo-bot",
+  "version": "1.0.0",
+  "description": "first bot",
+  "main": "bot.js",
+  "dependencies": {
+    "discord.js": "^11.3.0"
+  }
+}
