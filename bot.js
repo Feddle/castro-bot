@@ -99,6 +99,10 @@ client.on('message', message =>
         .then(response => message.channel.send(response))
         .catch(error => {console.log(error); message.channel.send(error["message"])})       
     }
+    else if (message.content(":lmfao:"))
+    {
+        message.channel.send(":lmfao:");
+    }
 });
 
 client.login(token);
