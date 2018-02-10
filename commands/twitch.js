@@ -65,7 +65,16 @@ function getChannel(twitchUser) {
 
 module.exports = {
     name: 'twitch',
+<<<<<<< HEAD
+    description: 'fetches twitch channel link and states whether the streamer is online or not',
+=======
     description: 'twitch channel',
+    args: true,
+    usage: 'username',
+<<<<<<< HEAD
+>>>>>>> 40a09041172253635d14bffad6fea57c41d7f64b
+=======
+>>>>>>> 40a09041172253635d14bffad6fea57c41d7f64b
     execute(message, args) {
         
         // Extract twitch user from command

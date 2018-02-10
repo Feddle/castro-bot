@@ -26,25 +26,39 @@ client.on('ready', () => {
 });
 
 
-// command execution 
+// command handler
 client.on('message', message =>
 {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 
     const args = message.content.slice(prefix.length).split(/ +/);
-    const command = args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase();
 
-    if (!client.commands.has(command)) return;
+    const command = client.commands.get(commandName)
+    || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+    if (!command) return;
+
+    if (command.args && !args.length)
+    {
+        let reply = `You didn't provide any arguments!`;
+
+        if (command.usage)
+        {
+            reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+        }
+        return message.channel.send(reply);
+    }
 
     try
     {
-        client.commands.get(command).execute(message, args);
+        command.execute(message, args);
     }
 
     catch (error) 
     {
         console.error(error);
-        message.reply('noob fix ur shit');
+        message.reply('fix your shit noob');
     }
 });
 
