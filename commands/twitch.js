@@ -72,6 +72,9 @@ module.exports = {
     args: true,
     usage: 'username',
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 40a09041172253635d14bffad6fea57c41d7f64b
+=======
 >>>>>>> 40a09041172253635d14bffad6fea57c41d7f64b
 =======
 >>>>>>> 40a09041172253635d14bffad6fea57c41d7f64b
