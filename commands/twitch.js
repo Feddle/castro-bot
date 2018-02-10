@@ -1,9 +1,13 @@
 const fetch = require('node-fetch');
+const twitchClientID = "i5wia3qcsuevs5xv98u1bf4tc8ytng"
 
 //Hakee annetun striimaajan
 function getStreamer(twitchUser) {
-    var streams = "https://wind-bow.glitch.me/twitch-api/streams/" + twitchUser;    
-    return fetch(streams)
+    var streams = "https://api.twitch.tv/kraken/streams/" + twitchUser;        
+    var myInit = { method: "GET",
+                   headers: {"Client-ID": twitchClientID}
+                };
+    return fetch(streams, myInit)
     .then(
     function(response) {                    
             var textResponse;
@@ -33,8 +37,11 @@ function getStreamer(twitchUser) {
 
 //Hakee annetun twitch kanavan
 function getChannel(twitchUser) {
-    var channels = "https://wind-bow.glitch.me/twitch-api/channels/" + twitchUser;
-    return fetch(channels)
+    var channels = "https://api.twitch.tv/kraken/channels/" + twitchUser;    
+    var myInit = { method: "GET",
+                   headers: {"Client-ID": twitchClientID}
+                };
+    return fetch(channels, myInit)
     .then(
     function(response) {                    
             var textResponse;
