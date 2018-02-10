@@ -26,11 +26,7 @@ client.on('ready', () => {
 });
 
 
-//---------- command execution --------------
-
-// Lista komennoista, päivitetään aina kun tehdään uusi komento
-var commandList = ["ketaootetaan", "miika ", "twitch <username> ", "avatar "];
-
+// command execution 
 client.on('message', message =>
 {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -38,29 +34,17 @@ client.on('message', message =>
     const args = message.content.slice(prefix.length).split(/ +/);
     const command = args.shift().toLowerCase();
 
-    if (command === 'ping') 
+    if (!client.commands.has(command)) return;
+
+    try
     {
-        client.commands.get('ping').execute(message, args);
+        client.commands.get(command).execute(message, args);
     }
-    else if (command === 'commands') 
+
+    catch (error) 
     {
-        client.commands.get('commands').execute(message, args, commandList);
-    }
-    else if (command === 'ketaootetaan') 
-    {
-        client.commands.get('ketaootetaan').execute(message, args);
-    }
-    else if (command === 'miika') 
-    {
-        client.commands.get('miika').execute(message, args);
-    }
-    else if (command.startsWith(`twitch`)) 
-    {
-        client.commands.get('twitch').execute(message, args);         
-    }
-    else if (command === 'avatar')
-    {
-        client.commands.get('avatar').execute(message, args);
+        console.error(error);
+        message.reply('noob fix ur shit');
     }
 });
 
