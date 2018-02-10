@@ -1,107 +1,66 @@
+// require node's file system module - https://nodejs.org/api/fs.html
+const fs = require('fs');
 const Discord = require("discord.js");
-const client = new Discord.Client();
 const {prefix, token} = require('./config.json');
-const fetch = require('node-fetch');
+
+
+//------command functionality--------
+
+const client = new Discord.Client();
+client.commands = new Discord.Collection();
+
+const commandFiles = fs.readdirSync('./commands');
+
+for (const file of commandFiles) {
+    // require the command file
+    const command = require(`./commands/${file}`);
+
+    // set a new item in the Collection
+    // with the key as the command name and the value as the exported module
+    client.commands.set(command.name, command);
+}
+
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-//Hakee annetun striimaajan
-function getStreamer(twitchUser) {
-    var streams = "https://wind-bow.glitch.me/twitch-api/streams/" + twitchUser;    
-    return fetch(streams)
-    .then(
-    function(response) {                    
-            var textResponse;
-            return response.json()
-                .then(json => {
-                  if (response.ok && json["stream"] != null) {                                                        
-                        var link = json["stream"]["channel"]["url"];
-                        var game = json["stream"]["channel"]["game"];
-                        var status = json["stream"]["channel"]["status"];
-                        var displayName = json["stream"]["channel"]["display_name"];
-                        var logo = json["stream"]["channel"]["logo"];    
-                        textResponse = displayName + " is streaming " + game + "\n" + status + "\n" + link;            
-                        return textResponse;
-                    } else if(json["stream"] == null) {                            
-                            var name = json["_links"]["self"].split("/");
-                            return getChannel(name[name.length - 1]);
-                    } else {
-                        return Promise.reject(Object.assign({}, json, {
-                        status: response.status,
-                        statusText: response.statusText
-                        }))
-                    }
-                })
-    }
-    );           
-}
 
-//Hakee annetun twitch kanavan
-function getChannel(twitchUser) {
-    var channels = "https://wind-bow.glitch.me/twitch-api/channels/" + twitchUser;
-    return fetch(channels)
-    .then(
-    function(response) {                    
-            var textResponse;
-            return response.json()
-                .then(json => {
-                  if (response.ok && json["display_name"]) {                                                        
-                        var link = json["url"];                        
-                        var displayName = json["display_name"];                                                 
-                        textResponse = displayName + " is offline" + "\n" + link;
-                        return textResponse;
-                    } else {
-                        return Promise.reject(Object.assign({}, json, {
-                        status: response.status,
-                        statusText: response.statusText
-                        }))
-                    }
-                })
-    }
-    );   
-}
+//---------- command execution --------------
 
+// Lista komennoista, päivitetään aina kun tehdään uusi komento
+var commandList = ["ketaootetaan", "miika ", "twitch <username> ", "avatar "];
 
-
-
-/*
----------- commands --------------
-* uusi komento: kopioi uusi else if rakenne ja täytä
-*/
-
-// Tähän lisätään aina uudet commandit niin näkyy !commands listassa.
-var commands = ["ketaootetaan","miika", "twitch <username>"];
-
-client.on('message', message => 
+client.on('message', message =>
 {
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
 
-    if (message.content.startsWith(`${prefix}commands`)) 
-    {
-        message.channel.send(commands.toString());
-    }
-    else if (message.content.startsWith(`${prefix}ketaootetaan`)) 
-    {
-        message.channel.send('Roopea odotettu joku 4h kohta.');
-    }
-    else if (message.content.startsWith(`${prefix}miika`)) 
-    {
-        message.channel.send('Miika on homo.');
-    }
-    else if (message.content.startsWith(`${prefix}twitch`)) 
-    {
-        // Extract twitch user from command
-        var sentence = message.content.split(' ');
-        var twitchUser = sentence[1];
+    const args = message.content.slice(prefix.length).split(/ +/);
+    const command = args.shift().toLowerCase();
 
-        getStreamer(twitchUser)
-        .then(response => message.channel.send(response))
-        .catch(error => {console.log(error); message.channel.send(error["message"])})       
-    }
-    else if (message.content(":lmfao:"))
+    if (command === 'ping') 
     {
-        message.channel.send(":lmfao:");
+        client.commands.get('ping').execute(message, args);
+    }
+    else if (command === 'commands') 
+    {
+        client.commands.get('commands').execute(message, args, commandList);
+    }
+    else if (command === 'ketaootetaan') 
+    {
+        client.commands.get('ketaootetaan').execute(message, args);
+    }
+    else if (command === 'miika') 
+    {
+        client.commands.get('miika').execute(message, args);
+    }
+    else if (command.startsWith(`twitch`)) 
+    {
+        client.commands.get('twitch').execute(message, args);         
+    }
+    else if (command === 'avatar')
+    {
+        client.commands.get('avatar').execute(message, args);
     }
 });
 
