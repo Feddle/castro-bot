@@ -66,6 +66,8 @@ function getChannel(twitchUser) {
 module.exports = {
     name: 'twitch',
     description: 'twitch channel',
+    args: true,
+    usage: 'username',
     execute(message, args) {
         
         // Extract twitch user from command
