@@ -1,3 +1,7 @@
+# Packages
+node_modules
+
+
 lib-cov
 *.seed
 *.log
@@ -12,6 +16,9 @@ logs
 results
 build
 
-node_modules
 
+# Authentication
 config.json
+
+# Misc
+.vscode/
