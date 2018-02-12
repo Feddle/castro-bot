@@ -52,7 +52,7 @@ client.on('message', message =>
 
     try
     {
-        command.execute(message, args);
+        command.execute(message, args, client);
     }
 
     catch (error) 
