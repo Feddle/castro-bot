@@ -1,6 +1,13 @@
 # Packages
 node_modules
+package-lock.json
 
+# Authentication
+config.json
+
+# Misc
+.vscode/
+start.bat
 
 lib-cov
 *.seed
@@ -17,8 +24,4 @@ results
 build
 
 
-# Authentication
-config.json
 
-# Misc
-.vscode/
