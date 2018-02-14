@@ -37,28 +37,6 @@ function clear() {
     seconds = 0; minutes = 0; hours = 0;
 }
 
-function listener(client) 
-{	
-	client.on('voiceStateUpdate', (oldMember, newMember) => 
-	{
-	  let newUserChannel = newMember.voiceChannel
-	  let oldUserChannel = oldMember.voiceChannel
-	  console.log("Event listener on käynnissä");
-
-
-	  if(oldUserChannel === undefined && newUserChannel !== undefined) 
-	  {
-
-	     // User Joins a voice channel
-	     console.log("liityit äänikanavalle");
-	  } 
-	  else if(newUserChannel === undefined)
-	  {
-	    // User leaves a voice channel
-	     console.log("lähdit äänikanavalta");
-	  }
-	})
-}
 
 
 module.exports = {
@@ -66,16 +44,47 @@ module.exports = {
     description: 'KETÄ OOTETAAN?',
 
     execute(message, args, client) 
-    {    	
-        //console.log(client);
-		//kaivaa objektista käyttäjänimen ja Id:n
+    {    	                
         var user = message.mentions.members.first();
-        var userId = message.mentions.members.first().id;
-		message.channel.send("henkilöä " + user + " ootetaan."); 
-		//start();
-		listener(client);
+        /*console.log(message.member.voiceChannel);
+        console.log(user.voiceChannel);
+        console.log(message.member.voiceChannel.get("id") == user.voiceChannel.get("id"));*/
+        if(user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {
+            message.channel.send(user + " on jo kanavalla");
+            return;
+        }
+        start();
+        var listener;        
+        
+		client.on('voiceStateUpdate', listener = (oldMember, newMember) => 
+        {
+          let newUserChannel = newMember.voiceChannel
+          let oldUserChannel = oldMember.voiceChannel
+          /*console.log(client);
+          console.log("=============");
+          console.log(oldMember);
+          console.log("Event listener on käynnissä");
+          console.log(newUserChannel);
+          console.log("====================");
+          console.log(user);
+          console.log("!!!!!!!!!!!!!!!!!");
+          console.log(user.user.id);
+          console.log("--------------");
+          console.log(newUserChannel.members.get(user.user.id));
+          console.log(newUserChannel.members.get("1241241"));*/
 
-
-
+          if(oldUserChannel === undefined && newUserChannel !== undefined) {
+              if(newUserChannel.members.get(user.user.id)) {
+                  stop();
+                  message.channel.send("henkilöä "+ user + " ootettiin joku " + clock);
+                  clear();
+                  client.removeListener("voiceStateUpdate", listener);
+              }
+             // User Joins a voice channel
+             console.log("liityit äänikanavalle");                 
+          } /*else if(){
+              message.channel.send("");              
+          }*/
+        })
     },
 };
