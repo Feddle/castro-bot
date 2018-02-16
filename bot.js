@@ -29,8 +29,8 @@ client.on('ready', () => {
 // command handler
 client.on('message', message =>
 {
-	if(message.content.toLowerCase() === "good bot") replyHappy();
-	if(message.content.toLowerCase() === "vitun bot") replySad();
+	if(message.content.toLowerCase() === "good bot") replyHappy(message);
+	if(message.content.toLowerCase() === "vitun bot") replySad(message);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 	
     const args = message.content.slice(prefix.length).split(/ +/);
@@ -66,14 +66,14 @@ client.on('message', message =>
 
 client.login(token);
 
-function replyHappy() {
+function replyHappy(message) {
 	var arr = [":)", ":3", ";^)", "^_^", ":vitunhomot:", ":castro:"];
-	message.channel.send(arr[getRandomInt(arr.length))];
+	message.channel.send(arr[getRandomInt(arr.length)]);
 }
 
-function replySad() {
+function replySad(message) {
 	var arr = [":(", ":mullekoalat:", ":3", "haluutko turpaas", ":castro:"];
-	message.channel.send(arr[getRandomInt(arr.length))];
+	message.channel.send(arr[getRandomInt(arr.length)]);
 }
 
 function getRandomInt(max) {
