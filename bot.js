@@ -67,12 +67,16 @@ client.on('message', message =>
 client.login(token);
 
 function replyHappy(message) {
-	var arr = [":)", ":3", ";^)", "^_^", ":vitunhomot:", ":castro:"];
+	var vitunhomotE = client.emojis.find("name", "vitunhomot");
+	var castroE = client.emojis.find("name", "castro");
+	var arr = [":)", ":3", ";^)", "^_^", vitunhomotE, castroE];
 	message.channel.send(arr[getRandomInt(arr.length)]);
 }
 
 function replySad(message) {
-	var arr = [":(", ":mullekoalat:", ":3", "haluutko turpaas", ":castro:"];
+	var castroE = client.emojis.find("name", "castro");
+	var mullekoalatE = client.emojis.find("name", "mullekoalat");
+	var arr = [":(", mullekoalatE, ":3", "haluutko turpaas", castroE];
 	message.channel.send(arr[getRandomInt(arr.length)]);
 }
 
