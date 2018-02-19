@@ -1,4 +1,4 @@
-// require node's file system module - https://nodejs.org/api/fs.html
+	// require node's file system module - https://nodejs.org/api/fs.html
 const fs = require('fs');
 const Discord = require("discord.js");
 const {prefix, token} = require('./config.json');
@@ -25,12 +25,15 @@ client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
+// Regex good bot/vitun bot komennoille
+var vitunRegex = /^([\s\S]*(vitun bot|vitun[\s]bot))[\s\S]*$/;
+var goodRegex = /^([\s\S]*(good bot|good[\s]bot))[\s\S]*$/;
 
 // command handler
 client.on('message', message =>
 {
-	if(message.content.toLowerCase() === "good bot") replyHappy(message);
-	if(message.content.toLowerCase() === "vitun bot") replySad(message);
+	if(message.content.toLowerCase().match(goodRegex)) replyHappy(message);
+	if(message.content.toLowerCase().match(vitunRegex)) replySad(message);
     if (!message.content.startsWith(prefix) || message.author.bot) return;
 	
     const args = message.content.slice(prefix.length).split(/ +/);
