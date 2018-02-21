@@ -21,7 +21,7 @@ function getStreamer(twitchUser) {
                         var logo = json["stream"]["channel"]["logo"];    
                         textResponse = displayName + " is streaming " + game + "\n" + status + "\n" + link;            
                         return textResponse;
-                    } else if(json["stream"] == null) {                            
+                    } else if(json["stream"] == null && json["_links"] != null) {                            
                             var name = json["_links"]["self"].split("/");
                             return getChannel(name[name.length - 1]);
                     } else {

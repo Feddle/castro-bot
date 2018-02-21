@@ -1,40 +1,39 @@
 
-var seconds = 0, minutes = 0, hours = 0,
-    t, clock;
+var waitingList = {};    
 
-function add() {
-    seconds++;
-    if (seconds >= 60) {
-        seconds = 0;
-        minutes++;
-        if (minutes >= 60) {
-            minutes = 0;
-            hours++;
+function add(id) {    
+    waitingList[id].time.seconds++;
+    if (waitingList[id].time.seconds >= 60) {
+        waitingList[id].time.seconds = 0;
+        waitingList[id].time.minutes++;
+        if (waitingList[id].time.minutes >= 60) {
+            waitingList[id].time.minutes = 0;
+            waitingList[id].time.hours++;
         }
     }
     
-    clock = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+    waitingList[id].clock = (waitingList[id].time.hours ? (waitingList[id].time.hours > 9 ? waitingList[id].time.hours : "0" + waitingList[id].time.hours) : "00") + ":" + 
+    (waitingList[id].time.minutes ? (waitingList[id].time.minutes > 9 ? waitingList[id].time.minutes : "0" + waitingList[id].time.minutes) : "00") + ":" + 
+    (waitingList[id].time.seconds > 9 ? waitingList[id].time.seconds : "0" + waitingList[id].time.seconds);
 
-    timer();
+    timer(id);
 }
-function timer() {
-    t = setTimeout(add, 1000);
-}
-
-
-
-function start() {
-    timer();
+function timer(id) {
+    waitingList[id].timer = setTimeout(add, 1000, id);    
 }
 
+function start(id) {
+    waitingList[id] = {timer: undefined, time: {seconds: 0, minutes: 0, hours: 0}, clock: ""};
+    timer(id);
+}
 
-function stop() {
-    clearTimeout(t);
+function stop(id) {
+    clearTimeout(waitingList[id].timer);
 }
 
 
-function clear() {
-    seconds = 0; minutes = 0; hours = 0;
+function clear(id) {
+    delete waitingList[id];
 }
 
 
@@ -44,47 +43,36 @@ module.exports = {
     description: 'KETÄ OOTETAAN?',
 
     execute(message, args, client) 
-    {    	                
+    {    	         
         var user = message.mentions.members.first();
-        /*console.log(message.member.voiceChannel);
-        console.log(user.voiceChannel);
-        console.log(message.member.voiceChannel.get("id") == user.voiceChannel.get("id"));*/
+        var id = user.user.id;
+        console.log(waitingList);
         if(user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {
             message.channel.send(user + " on jo kanavalla");
             return;
         }
-        start();
+        if(waitingList[id]) {
+            message.channel.send("henkilöä " + user + " ootetaan jo");
+            return;
+        }
+        start(id);
         var listener;        
         
 		client.on('voiceStateUpdate', listener = (oldMember, newMember) => 
         {
           let newUserChannel = newMember.voiceChannel
           let oldUserChannel = oldMember.voiceChannel
-          /*console.log(client);
-          console.log("=============");
-          console.log(oldMember);
-          console.log("Event listener on käynnissä");
-          console.log(newUserChannel);
-          console.log("====================");
-          console.log(user);
-          console.log("!!!!!!!!!!!!!!!!!");
-          console.log(user.user.id);
-          console.log("--------------");
-          console.log(newUserChannel.members.get(user.user.id));
-          console.log(newUserChannel.members.get("1241241"));*/
+
 
           if(oldUserChannel === undefined && newUserChannel !== undefined) {
-              if(newUserChannel.members.get(user.user.id)) {
-                  stop();
-                  message.channel.send("henkilöä "+ user + " ootettiin joku " + clock);
-                  clear();
+              if(newUserChannel.members.get(id)) {
+                  stop(id);
+                  message.channel.send("henkilöä "+ user + " ootettiin joku " + waitingList[id].clock);
+                  clear(id);
                   client.removeListener("voiceStateUpdate", listener);
               }
-             // User Joins a voice channel
-             console.log("liityit äänikanavalle");                 
-          } /*else if(){
-              message.channel.send("");              
-          }*/
+               
+          } 
         })
     },
 };

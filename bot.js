@@ -26,8 +26,8 @@ client.on('ready', () => {
 });
 
 // Regex good bot/vitun bot komennoille
-var vitunRegex = /^([\s\S]*(vitun bot|vitun[\s]bot))[\s\S]*$/;
-var goodRegex = /^([\s\S]*(good bot|good[\s]bot))[\s\S]*$/;
+var vitunRegex = /(vitun[\s]bot)/;
+var goodRegex = /(good[\s]bot)/;
 
 // command handler
 client.on('message', message =>
@@ -67,12 +67,14 @@ client.on('message', message =>
     }
 });
 
+
+
 client.login(token);
 
 function replyHappy(message) {
-	var vitunhomotE = client.emojis.find("name", "vitunhomot").toString();
+	//var vitunhomotE = client.emojis.find("name", "vitunhomot").toString();
 	var castroE = client.emojis.find("name", "castro").toString();
-	var arr = [":)", ":3", ";^)", "^_^", vitunhomotE, castroE];
+	var arr = [":)", ":3", ";^)", castroE];
 	message.channel.send(arr[getRandomInt(arr.length)]);
 }
 
