@@ -81,7 +81,7 @@ function replyHappy(message) {
 function replySad(message) {
 	var castroE = client.emojis.find("name", "castro").toString();
 	var mullekoalatE = client.emojis.find("name", "mullekoalat").toString();
-	var arr = [":(", mullekoalatE, ":3", "haluutko turpaas", castroE];
+	var arr = [":(", mullekoalatE, ":3", "haluutko turpaas","No ite vittu koodasit :D homo :Dd", castroE];
 	message.channel.send(arr[getRandomInt(arr.length)]);
 }
 
