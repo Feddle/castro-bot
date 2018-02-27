@@ -60,7 +60,7 @@ module.exports = {
 
     execute(message, args, client) 
     {    	    
-        fs.readFile('./logs/leaderboard_KO.json', (err, data) => {
+        fs.readFile('./leaderboards/leaderboard_KO.json', (err, data) => {
            if(err) throw err; 
            leaderboard = JSON.parse(data);
            
@@ -92,7 +92,7 @@ module.exports = {
             var interval = setInterval(function() {
                 leaderboard[id] = waitingList[id].clock;
                 
-                fs.writeFile('./logs/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
+                fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
                     if (err) throw err;                    
                 });
             },60000);            
@@ -117,7 +117,7 @@ module.exports = {
                                     (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + 
                                     (seconds > 9 ? seconds : "0" + seconds);
                       leaderboard[id] = timeAfter;
-                      fs.writeFile('./logs/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
+                      fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
                             if (err) throw err;                            
                         });
                       clear(id);
