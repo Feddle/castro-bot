@@ -122,7 +122,7 @@ module.exports = {
                       var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;                      
                       var minutes = parseInt(timeBefore[1]) + waitingList[id].time.minutes;
                       var hours = parseInt(timeBefore[0]) + waitingList[id].time.hours;
-                      if(seconds >= 60){minutes++; seconds = seconds - 60;
+                      if(seconds >= 60){minutes++; seconds = seconds - 60};
                       if(minutes >= 60){hours++; minutes = minutes - 60;}
                       var timeAfter = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + 
                                     (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + 
