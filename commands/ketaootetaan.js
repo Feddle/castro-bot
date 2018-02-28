@@ -119,9 +119,11 @@ module.exports = {
                       message.channel.send("henkilöä "+ user + " ootettiin joku " + waitingList[id].clock);
                       clearInterval(interval);
                       var timeBefore = leaderboard[id].split(":");                      
-                      var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;
+                      var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;                      
                       var minutes = parseInt(timeBefore[1]) + waitingList[id].time.minutes;
                       var hours = parseInt(timeBefore[0]) + waitingList[id].time.hours;
+                      if(seconds >= 60) minutes++;
+                      if(minutes >= 60) hours++;
                       var timeAfter = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + 
                                     (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + 
                                     (seconds > 9 ? seconds : "0" + seconds);
