@@ -44,12 +44,14 @@ function sortLeaderboard() {
     for(var id in leaderboard) {        
         arr.push({[id]:leaderboard[id]});
     }
-    arr.sort(function(a,b) {
-        var timeA = parseInt(Object.values(a)[0].replace(":", "")); 
-        var timeB = parseInt(Object.values(b)[0].replace(":", ""));         
+    console.log(arr);
+    var re = /:/g;
+    var newArr = arr.sort(function(a,b) {
+        var timeA = parseInt(Object.values(a)[0].replace(re,"")); 
+        var timeB = parseInt(Object.values(b)[0].replace(re, ""));            
         return timeB - timeA;
     });
-    return arr;
+    return newArr;
 }
 
 
@@ -70,9 +72,13 @@ module.exports = {
                   "title": "**Ketaootetaan Leaderboard**",
                   "fields": []
                 };
+                
                 for(let i = 0; i < arr.length; i++) {
-                    let id = Object.keys(arr[i])[0];                    
-                    embed["fields"].push({"name": "#"+(i+1), "value": client.users.get(id).username + " - " + Object.values(arr[i])[0]});
+                    let id = Object.keys(arr[i])[0];   
+                    var username = "";
+                    try{username = client.users.get(id).username;}catch(error){}
+                    if(!username) username = "User not found";
+                    embed["fields"].push({"name": "#"+(i+1), "value": username + " - " + Object.values(arr[i])[0]});
                 }
                 message.channel.send({ embed });                               
                 return;
