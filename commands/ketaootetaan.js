@@ -43,8 +43,7 @@ function sortLeaderboard() {
     var arr = [];
     for(var id in leaderboard) {        
         arr.push({[id]:leaderboard[id]});
-    }
-    console.log(arr);
+    }    
     var re = /:/g;
     var newArr = arr.sort(function(a,b) {
         var timeA = parseInt(Object.values(a)[0].replace(re,"")); 
@@ -85,6 +84,10 @@ module.exports = {
             }
             
             var user = message.mentions.members.first();
+            if(!user) {
+                message.channel.send("ei sitä komentoa noin käytetä");
+                return;
+            }
             var id = user.user.id;        
             if(user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {
                 message.channel.send(user + " on jo kanavalla");
