@@ -53,6 +53,22 @@ function sortLeaderboard() {
     return newArr;
 }
 
+function writeTime(id) {
+    var timeBefore = leaderboard[id].split(":");                      
+    var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;                      
+    var minutes = parseInt(timeBefore[1]) + waitingList[id].time.minutes;
+    var hours = parseInt(timeBefore[0]) + waitingList[id].time.hours;
+    if(seconds >= 60){minutes++; seconds = seconds - 60};
+    if(minutes >= 60){hours++; minutes = minutes - 60;}
+    var timeAfter = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + 
+                (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + 
+                (seconds > 9 ? seconds : "0" + seconds);
+    leaderboard[id] = timeAfter;
+    fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
+        if (err) throw err;                            
+    });
+}
+
 
 
 module.exports = {
@@ -99,11 +115,7 @@ module.exports = {
             }
             start(id);                
             var interval = setInterval(function() {
-                leaderboard[id] = waitingList[id].clock;
-                
-                fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
-                    if (err) throw err;                    
-                });
+                writeTime(id);
             },60000);            
             var listener;        
             
@@ -118,19 +130,7 @@ module.exports = {
                       stop(id);
                       message.channel.send("henkilöä "+ user + " ootettiin joku " + waitingList[id].clock);
                       clearInterval(interval);
-                      var timeBefore = leaderboard[id].split(":");                      
-                      var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;                      
-                      var minutes = parseInt(timeBefore[1]) + waitingList[id].time.minutes;
-                      var hours = parseInt(timeBefore[0]) + waitingList[id].time.hours;
-                      if(seconds >= 60){minutes++; seconds = seconds - 60};
-                      if(minutes >= 60){hours++; minutes = minutes - 60;}
-                      var timeAfter = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + 
-                                    (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + 
-                                    (seconds > 9 ? seconds : "0" + seconds);
-                      leaderboard[id] = timeAfter;
-                      fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {  
-                            if (err) throw err;                            
-                        });
+                      writeTime(id);
                       clear(id);
                       client.removeListener("voiceStateUpdate", listener);
                   }

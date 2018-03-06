@@ -5,6 +5,9 @@ package-lock.json
 # Authentication
 config.json
 
+# Leaderboards
+leaderboards/
+
 # Misc
 .vscode/
 start.bat
