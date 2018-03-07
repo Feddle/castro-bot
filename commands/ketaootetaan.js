@@ -64,6 +64,8 @@ function sortLeaderboard() {
 }
 
 function writeTime(id) {
+    if (leaderboard[id] == undefined)
+		leaderboard[id] = "00:00:00";
 	var timeBefore = leaderboard[id].split(":");
 	var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;
 	var minutes = parseInt(timeBefore[1]) + waitingList[id].time.minutes;
