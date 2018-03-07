@@ -121,6 +121,25 @@ module.exports = {
 				});
 				return;
 			}
+			// kertoo ketä vittu odotetaan 
+			if (args == 'status')
+	        {
+
+	        	var statusList = [];
+
+		        if (!Object.keys(waitingList).length > 0 )
+		        {
+		        	// ei ketään
+		        	message.channel.send("Ketään ei ooteta.");
+		        }
+		        // jotakuta vittu odotetaan
+		        else
+		        {
+		        	Object.keys(waitingList).forEach(id => {statusList.push(client.users.get(id).username)})
+		          	message.channel.send("Seuraavia henkilöitä odotetaan: \n \n" + statusList.join('\n').toString());
+		        }
+	        return;
+	        };
 
 			var user = message.mentions.members.first();
 			if (!user) {
