@@ -191,7 +191,6 @@ module.exports = {
 					if (oldUserChannel === undefined && newUserChannel !== undefined) {
 						if (newUserChannel.members.get(id)) {
 							stop(id);
-							clockFormat(id);
 							message.channel.send("henkilöä " + user + " ootettiin joku " + clockFormat(id));
 							clearInterval(interval);
 							writeTime(id);
