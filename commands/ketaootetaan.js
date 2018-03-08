@@ -105,7 +105,6 @@ function clockFormat(id){
 	else{
 		output = splitClock[0].toString() + " tuntia " + splitClock[1].toString() + " minuuttia " + splitClock[2].toString() + " sekuntia.";
 		}
-	console.info(output);
 	return output;
 	}
 
