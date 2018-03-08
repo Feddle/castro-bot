@@ -2,6 +2,7 @@
 const fs = require('fs');
 var waitingList = {};
 var leaderboard;
+var output="";
 
 function add(id) {
 	waitingList[id].time.seconds++;
@@ -88,6 +89,27 @@ function writeTime(id) {
 	});
 }
 
+function clockFormat(id){
+	var splitClock = waitingList[id].clock.split(':', 3);
+	//tunnit, minuutit, sekunnit
+	if(splitClock[0] == '00'){
+		//minuutit, sekunnit
+		if(splitClock[1] == '00'){
+			//sekunnit
+			output = splitClock[2].toString() + " sekuntia. ";
+		}
+		else{
+			output = splitClock[1].toString() + " minuuttia " + splitClock[2].toString() + " sekuntia.";
+		}
+	}
+	else{
+		output = splitClock[0].toString() + " tuntia " + splitClock[1].toString() + " minuuttia " + splitClock[2].toString() + " sekuntia.";
+		}
+	console.info(output);
+	return output;
+	}
+
+
 module.exports = {
 	name: 'ketaootetaan',
 	description: 'KETÄ OOTETAAN?',
@@ -170,7 +192,8 @@ module.exports = {
 					if (oldUserChannel === undefined && newUserChannel !== undefined) {
 						if (newUserChannel.members.get(id)) {
 							stop(id);
-							message.channel.send("henkilöä " + user + " ootettiin joku " + waitingList[id].clock);
+							clockFormat(id);
+							message.channel.send("henkilöä " + user + " ootettiin joku " + output);
 							clearInterval(interval);
 							writeTime(id);
 							clear(id);
