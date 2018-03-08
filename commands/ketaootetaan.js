@@ -2,7 +2,6 @@
 const fs = require('fs');
 var waitingList = {};
 var leaderboard;
-var output="";
 
 function add(id) {
 	waitingList[id].time.seconds++;
@@ -90,6 +89,7 @@ function writeTime(id) {
 }
 
 function clockFormat(id){
+	var output="";
 	var splitClock = waitingList[id].clock.split(':', 3);
 	//tunnit, minuutit, sekunnit
 	if(splitClock[0] == '00'){
@@ -192,7 +192,7 @@ module.exports = {
 						if (newUserChannel.members.get(id)) {
 							stop(id);
 							clockFormat(id);
-							message.channel.send("henkilöä " + user + " ootettiin joku " + output);
+							message.channel.send("henkilöä " + user + " ootettiin joku " + clockFormat(id));
 							clearInterval(interval);
 							writeTime(id);
 							clear(id);
