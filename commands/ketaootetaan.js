@@ -91,19 +91,23 @@ function writeTime(id) {
 function clockFormat(id){
 	var output="";
 	var splitClock = waitingList[id].clock.split(':', 3);
-	//tunnit, minuutit, sekunnit
-	if(splitClock[0] == '00'){
-		//minuutit, sekunnit
-		if(splitClock[1] == '00'){
-			//sekunnit
-			output = splitClock[2].toString() + " sekuntia. ";
+	let hours = splitClock[0];
+	let minutes = splitClock[1];
+	let seconds = splitClock[2];
+	
+	if(hours == '00'){		
+		if(minutes == '00'){			
+			output = seconds[0] == '0' ? seconds[1] + " sekuntia." : seconds + " sekuntia.";
 		}
 		else{
-			output = splitClock[1].toString() + " minuuttia " + splitClock[2].toString() + " sekuntia.";
+			output = (minutes[0] == '0' ? minutes[1] + " minuuttia " : minutes) + 
+			(seconds[0] == '0' ? seconds[1] + " sekuntia." : seconds + " sekuntia.");
 		}
 	}
 	else{
-		output = splitClock[0].toString() + " tuntia " + splitClock[1].toString() + " minuuttia " + splitClock[2].toString() + " sekuntia.";
+		output = (hours[0] == '0' ? hours[1] + " tuntia " :  hours +  " tuntia ") +
+		(minutes[0] == '0' ? minutes[1] + " minuuttia " : minutes) + 
+		(seconds[0] == '0' ? seconds[1] + " sekuntia." : seconds + " sekuntia.")
 		}
 	return output;
 	}
@@ -112,7 +116,7 @@ function clockFormat(id){
 module.exports = {
 	name: 'ketaootetaan',
 	description: 'KETÄ OOTETAAN?',
-
+	aliases: ['ke'],
 	execute(message, args, client) {
 		fs.readFile('./leaderboards/leaderboard_KO.json', (err, data) => {
 			if (err)
@@ -143,63 +147,62 @@ module.exports = {
 					embed
 				});
 				return;
-			}
-			// kertoo ketä vittu odotetaan 
+			}			
 			if (args == 'status')
-	        {
-
+	        {				
 	        	var statusList = [];
 
 		        if (!Object.keys(waitingList).length > 0 )
-		        {
-		        	// ei ketään
+		        {		        	
 		        	message.channel.send("Ketään ei ooteta.");
-		        }
-		        // jotakuta vittu odotetaan
+		        }		        
 		        else
 		        {
-		        	Object.keys(waitingList).forEach(id => {statusList.push(client.users.get(id).username)})
+		        	Object.keys(waitingList).forEach(id => {statusList.push(client.users.get(id).username)});
 		          	message.channel.send("Seuraavia henkilöitä odotetaan: \n \n" + statusList.join('\n').toString());
 		        }
 	        return;
 	        };
 
-			var user = message.mentions.members.first();
-			if (!user) {
+			var mentioned_users = message.mentions.members;
+			
+			if (!mentioned_users) {
 				message.channel.send("ei sitä komentoa noin käytetä");
 				return;
 			}
-			var id = user.user.id;
-			if (user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {
-				message.channel.send(user + " on jo kanavalla");
-				return;
-			}
-			if (waitingList[id]) {
-				message.channel.send("henkilöä " + user + " ootetaan jo");
-				return;
-			}
-			start(id);
-			var interval = setInterval(function () {
-					writeTime(id);
-				}, 60000);
-			var listener;
+			for(let [snowflake, user] of mentioned_users) {				
+				let id = snowflake;				
+				if (user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {
+					message.channel.send(user.username + " on jo kanavalla");
+					continue;
+				}
+				if (waitingList[id]) {
+					message.channel.send("henkilöä " + user.username + " ootetaan jo");
+					continue;
+				}
+				start(id);
+				var interval = setInterval(function () {
+						writeTime(id);
+					}, 60000);
+				var listener;
 
-			client.on('voiceStateUpdate', listener = (oldMember, newMember) => {
-				let newUserChannel = newMember.voiceChannel
-					let oldUserChannel = oldMember.voiceChannel
+				client.on('voiceStateUpdate', listener = (oldMember, newMember) => {
+					let newUserChannel = newMember.voiceChannel
+						let oldUserChannel = oldMember.voiceChannel
 
-					if (oldUserChannel === undefined && newUserChannel !== undefined) {
-						if (newUserChannel.members.get(id)) {
-							stop(id);
-							message.channel.send("henkilöä " + user + " ootettiin joku " + clockFormat(id));
-							clearInterval(interval);
-							writeTime(id);
-							clear(id);
-							client.removeListener("voiceStateUpdate", listener);
+						if (oldUserChannel === undefined && newUserChannel !== undefined) {
+							if (newUserChannel.members.get(id)) {
+								stop(id);
+								message.channel.send("henkilöä " + user + " ootettiin joku " + clockFormat(id));
+								clearInterval(interval);
+								writeTime(id);
+								clear(id);
+								client.removeListener("voiceStateUpdate", listener);
+							}
+
 						}
-
-					}
-			})
+				})
+		}
 		});
 
 	},

@@ -73,8 +73,30 @@ function replyHappy(message) {
 function replySad(message) {
 	var castroE = client.emojis.find("name", "castro").toString();
 	var mullekoalatE = client.emojis.find("name", "mullekoalat").toString();
-	var arr = [":(", mullekoalatE, ":3", "haluutko turpaas", "No ite vittu koodasit :D homo :Dd", castroE];
-	message.channel.send(arr[getRandomInt(arr.length)]);
+	var arr = [":(", mullekoalatE, ":3", "haluutko turpaas", "No ite vittu koodasit :D homo :Dd", castroE];	
+	var reply = arr[getRandomInt(arr.length)]
+	message.channel.send(reply);
+	setTimeout(replyTurpaas, 500, message, reply);	
+}
+
+function replyTurpaas(message, reply) {
+	if(reply == "haluutko turpaas") {		
+		var listener;
+		client.on("message", listener = function(msg) {			
+			switch (msg.content) {
+				case "en":				
+					message.channel.send("saat silti");
+					client.removeListener("message", listener);
+					break;			
+				case "homo":
+					message.channel.send("ite oot");
+					client.removeListener("message", listener);
+					break;
+				default:
+					client.removeListener("message", listener);
+			}
+		});
+	}
 }
 
 function getRandomInt(max) {
