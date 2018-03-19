@@ -2,6 +2,7 @@
 const fs = require('fs');
 var waitingList = {};
 var leaderboard;
+const logger = require("../logger.js");
 
 function add(id) {
 	waitingList[id].time.seconds++;
@@ -73,7 +74,7 @@ function writeTime(id) {
 	if (seconds >= 60) {
 		minutes++;
 		seconds = seconds - 60
-	};
+	}
 	if (minutes >= 60) {
 		hours++;
 		minutes = minutes - 60;
@@ -83,34 +84,21 @@ function writeTime(id) {
 	(seconds > 9 ? seconds : "0" + seconds);
 	leaderboard[id] = timeAfter;
 	fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {
-		if (err)
-			throw err;
+		if (err) logger.error(err);		
+		else logger.info("Wrote " + JSON.stringify(leaderboard) + "to leaderboard_KO.json");
 	});
 }
 
-function clockFormat(id){
+function clockFormat(id) {
 	var output="";
 	var splitClock = waitingList[id].clock.split(':', 3);
-	let hours = splitClock[0];
-	let minutes = splitClock[1];
-	let seconds = splitClock[2];
+	let hours = splitClock[0][0] == '0' ? splitClock[0][1] : splitClock[0];
+	let minutes = splitClock[1][0] == '0' ? splitClock[1][1] : splitClock[1];
+	let seconds = splitClock[2][0] == '0' ? splitClock[2][1] : splitClock[2];
 	
-	if(hours == '00'){		
-		if(minutes == '00'){			
-			output = seconds[0] == '0' ? seconds[1] + " sekuntia." : seconds + " sekuntia.";
-		}
-		else{
-			output = (minutes[0] == '0' ? minutes[1] + " minuuttia " : minutes) + 
-			(seconds[0] == '0' ? seconds[1] + " sekuntia." : seconds + " sekuntia.");
-		}
-	}
-	else{
-		output = (hours[0] == '0' ? hours[1] + " tuntia " :  hours +  " tuntia ") +
-		(minutes[0] == '0' ? minutes[1] + " minuuttia " : minutes) + 
-		(seconds[0] == '0' ? seconds[1] + " sekuntia." : seconds + " sekuntia.")
-		}
-	return output;
-	}
+	output = hours == "00" ? (minutes == "00" ? seconds + " sekuntia" : minutes + " minuuttia " + seconds + " sekuntia") : 
+	(hours + " tuntia " + minutes + " minuuttia " + seconds + " sekuntia");	
+}
 
 
 module.exports = {
@@ -119,8 +107,8 @@ module.exports = {
 	aliases: ['ke'],
 	execute(message, args, client) {
 		fs.readFile('./leaderboards/leaderboard_KO.json', (err, data) => {
-			if (err)
-				throw err;
+			if (err) logger.error(err);
+			logger.info("Read file leaderboard_KO.json");
 			leaderboard = JSON.parse(data);
 
 			if (args == "leaderboard") {
@@ -135,34 +123,29 @@ module.exports = {
 					var username = "";
 					try {
 						username = client.users.get(id).username;
-					} catch (error) {}
-					if (!username)
-						username = "User not found";
+					} catch (err) {logger.error(err);}
+					if (!username) username = "User not found";
+
 					embed["fields"].push({
 						"name": "#" + (i + 1),
 						"value": username + " - " + Object.values(arr[i])[0]
 					});
 				}
-				message.channel.send({
-					embed
-				});
+				message.channel.send({embed});
 				return;
 			}			
-			if (args == 'status')
-	        {				
+			if (args == 'status') {				
 	        	var statusList = [];
 
-		        if (!Object.keys(waitingList).length > 0 )
-		        {		        	
+		        if (!Object.keys(waitingList).length > 0 ) {		        	
 		        	message.channel.send("Ketään ei ooteta.");
 		        }		        
-		        else
-		        {
+		        else {
 		        	Object.keys(waitingList).forEach(id => {statusList.push(client.users.get(id).username)});
 		          	message.channel.send("Seuraavia henkilöitä odotetaan: \n \n" + statusList.join('\n').toString());
 		        }
 	        return;
-	        };
+	        }
 
 			var mentioned_users = message.mentions.members;
 			
@@ -187,6 +170,7 @@ module.exports = {
 				var listener;
 
 				client.on('voiceStateUpdate', listener = (oldMember, newMember) => {
+					logger.info("[EVENT] voiceStateUpdate");
 					let newUserChannel = newMember.voiceChannel
 						let oldUserChannel = oldMember.voiceChannel
 
@@ -201,7 +185,7 @@ module.exports = {
 							}
 
 						}
-				})
+				});
 		}
 		});
 
