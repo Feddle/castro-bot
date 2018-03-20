@@ -100,7 +100,7 @@ function clockFormat(id) {
 	(hours + " tuntia " + minutes + " minuuttia " + seconds + " sekuntia");	
 }
 
-function leaderboard(message) {
+function showLeaderboard(message) {
 	var arr = sortLeaderboard();
 	var embed = {
 		"title": "**Ketaootetaan Leaderboard**",
@@ -184,7 +184,7 @@ module.exports = {
 				leaderboard = JSON.parse(data);
 			} catch(err) {logger.error("Error parsing leaderboard_KO.json: " + err);}
 
-			if (args == "leaderboard") {leaderboard(message); return;}		
+			if (args == "leaderboard") {showLeaderboard(message); return;}		
 			if (args == "status") {status(message); return;}
 
 			var mentioned_users = message.mentions.members;
