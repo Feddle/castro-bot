@@ -100,94 +100,101 @@ function clockFormat(id) {
 	(hours + " tuntia " + minutes + " minuuttia " + seconds + " sekuntia");	
 }
 
+function leaderboard(message) {
+	var arr = sortLeaderboard();
+	var embed = {
+		"title": "**Ketaootetaan Leaderboard**",
+		"fields": []
+	};
+
+	for (let i = 0; i < arr.length; i++) {
+		let id = Object.keys(arr[i])[0];
+		var username = "";
+		try {
+			username = client.users.get(id).username;
+		} catch (err) {logger.error(err);}
+		if (!username) username = "User not found";
+
+		embed["fields"].push({
+			"name": "#" + (i + 1),
+			"value": username + " - " + Object.values(arr[i])[0]
+		});
+	}
+	message.channel.send({embed});
+	return;
+}
+
+function status(message) {
+	var statusList = [];
+	if (!Object.keys(waitingList).length > 0 ) {		        	
+		message.channel.send("Ketään ei ooteta.");
+	}		        
+	else {
+		Object.keys(waitingList).forEach(id => {statusList.push(client.users.get(id).username)});
+		message.channel.send("Seuraavia henkilöitä odotetaan: \n \n" + statusList.join('\n').toString());
+	}	        
+}
+
+function handle_KO(mentioned_users, message) {
+	for(let [snowflake, user] of mentioned_users) {				
+		let id = snowflake;				
+		if (user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {			
+			message.channel.send(user.user.username + " on jo kanavalla");
+			continue;
+		}
+		if (waitingList[id]) {
+			message.channel.send("henkilöä " + user.user.username + " ootetaan jo");
+			continue;
+		}
+		start(id);
+		var interval = setInterval(function () {
+				writeTime(id);
+			}, 60000);
+		var listener;
+
+		client.on('voiceStateUpdate', listener = (oldMember, newMember) => {
+			logger.info("[EVENT] voiceStateUpdate");
+			let newUserChannel = newMember.voiceChannel
+				let oldUserChannel = oldMember.voiceChannel
+
+				if (oldUserChannel === undefined && newUserChannel !== undefined) {
+					if (newUserChannel.members.get(id)) {
+						stop(id);
+						message.channel.send("henkilöä " + user.user.username + " ootettiin joku " + clockFormat(id));
+						clearInterval(interval);
+						writeTime(id);
+						clear(id);
+						client.removeListener("voiceStateUpdate", listener);
+					}
+				}
+		});
+	}
+}
+
 
 module.exports = {
 	name: 'ketaootetaan',
 	description: 'KETÄ OOTETAAN?',
-	aliases: ['ke'],
+	aliases: ["ke"],
 	execute(message, args, client) {
-		fs.readFile('./leaderboards/leaderboard_KO.json', (err, data) => {
-			if (err) logger.error(err);
+		fs.readFile("./leaderboards/leaderboard_KO.json", (err, data) => {
+			if (err) logger.error("Error reading leaderboard_KO.json: " + err);
 			logger.info("Read file leaderboard_KO.json");
-			leaderboard = JSON.parse(data);
+			try {
+				leaderboard = JSON.parse(data);
+			} catch(err) {logger.error("Error parsing leaderboard_KO.json: " + err);}
 
-			if (args == "leaderboard") {
-				var arr = sortLeaderboard();
-				var embed = {
-					"title": "**Ketaootetaan Leaderboard**",
-					"fields": []
-				};
-
-				for (let i = 0; i < arr.length; i++) {
-					let id = Object.keys(arr[i])[0];
-					var username = "";
-					try {
-						username = client.users.get(id).username;
-					} catch (err) {logger.error(err);}
-					if (!username) username = "User not found";
-
-					embed["fields"].push({
-						"name": "#" + (i + 1),
-						"value": username + " - " + Object.values(arr[i])[0]
-					});
-				}
-				message.channel.send({embed});
-				return;
-			}			
-			if (args == 'status') {				
-	        	var statusList = [];
-
-		        if (!Object.keys(waitingList).length > 0 ) {		        	
-		        	message.channel.send("Ketään ei ooteta.");
-		        }		        
-		        else {
-		        	Object.keys(waitingList).forEach(id => {statusList.push(client.users.get(id).username)});
-		          	message.channel.send("Seuraavia henkilöitä odotetaan: \n \n" + statusList.join('\n').toString());
-		        }
-	        return;
-	        }
+			if (args == "leaderboard") {leaderboard(message); return;}		
+			if (args == "status") {status(message); return;}
 
 			var mentioned_users = message.mentions.members;
 			
 			if (!mentioned_users) {
+				logger.info("Could not parse users from Ketaootetaan command: " + message.content);
 				message.channel.send("ei sitä komentoa noin käytetä");
 				return;
 			}
-			for(let [snowflake, user] of mentioned_users) {				
-				let id = snowflake;				
-				if (user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {
-					message.channel.send(user.username + " on jo kanavalla");
-					continue;
-				}
-				if (waitingList[id]) {
-					message.channel.send("henkilöä " + user.username + " ootetaan jo");
-					continue;
-				}
-				start(id);
-				var interval = setInterval(function () {
-						writeTime(id);
-					}, 60000);
-				var listener;
-
-				client.on('voiceStateUpdate', listener = (oldMember, newMember) => {
-					logger.info("[EVENT] voiceStateUpdate");
-					let newUserChannel = newMember.voiceChannel
-						let oldUserChannel = oldMember.voiceChannel
-
-						if (oldUserChannel === undefined && newUserChannel !== undefined) {
-							if (newUserChannel.members.get(id)) {
-								stop(id);
-								message.channel.send("henkilöä " + user + " ootettiin joku " + clockFormat(id));
-								clearInterval(interval);
-								writeTime(id);
-								clear(id);
-								client.removeListener("voiceStateUpdate", listener);
-							}
-
-						}
-				});
-		}
+			handle_KO(mentioned_users, message);
 		});
-
 	},
 };
