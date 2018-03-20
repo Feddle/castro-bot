@@ -65,6 +65,7 @@ function sortLeaderboard() {
 }
 
 function writeTime(id) {
+	if(id == undefined) {logger.warn("Error writing time to leaderboard_KO.json: id was undefined"); return;}
     if (leaderboard[id] == undefined)
 		leaderboard[id] = "00:00:00";
 	var timeBefore = leaderboard[id].split(":");

@@ -28,16 +28,24 @@ client.on('ready', () => {
 		if(err) logger.warn("Could not read crash.log: " + err);
 		else {
 			try {
-				var d = JSON.parse(data);
+				var d = JSON.parse(data).stack;
 			} catch(err) {
 				logger.error("Could not parse crash.log: " + err);
 				logger.info("Deleting crash.log\n" + data);
 				fs.unlink("./logs/crash.log", (err) => {
 					if(err) logger.error("Could not remove crash.log:" + err);
 					logger.info("Removed crash.log");
-				})
+				});
 			}
-			client.channels.get("423839512666439692").send("Kaadoit botin, tässä pino: \n" + "```\n" + d.stack + "```");
+			if(d == undefined) {
+				logger.warn("Crash stack was undefined");
+				fs.unlink("./logs/crash.log", (err) => {
+					if(err) logger.error("Could not remove crash.log:" + err);
+					logger.info("Removed crash.log");
+				});
+				d = "something went wrong :(";
+			}
+			client.channels.get("423839512666439692").send("Kaadoit botin, tässä pino: \n" + "```\n" + d + "```");
 			let date = new Date().toISOString().replace(/:/g, "-");
 			fs.rename("./logs/crash.log", "./logs/" + date + "-crash.log", function(err) {
 				if (err) logger.error("Error renaming crash.log: " + err);			
