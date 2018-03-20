@@ -31,17 +31,17 @@ client.on('ready', () => {
 				var d = JSON.parse(data).stack;
 			} catch(err) {
 				logger.error("Could not parse crash.log: " + err);
-				logger.info("Deleting crash.log\n" + data);
+				logger.info("Removing crash.log\n" + data);
 				fs.unlink("./logs/crash.log", (err) => {
 					if(err) logger.error("Could not remove crash.log:" + err);
-					logger.info("Removed crash.log");
+					else logger.info("Removed crash.log");
 				});
 			}
 			if(d == undefined) {
 				logger.warn("Crash stack was undefined");
 				fs.unlink("./logs/crash.log", (err) => {
 					if(err) logger.error("Could not remove crash.log:" + err);
-					logger.info("Removed crash.log");
+					else logger.info("Removed crash.log");
 				});
 				d = "something went wrong :(";
 			}
