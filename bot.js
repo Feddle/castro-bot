@@ -6,6 +6,8 @@ const {
 } = require('./config.json');
 const logger = require("./logger.js");
 
+var t0 = process.hrtime();
+
 //------command functionality--------
 
 const client = new Discord.Client();
@@ -22,7 +24,10 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
+//Check if there was a crash, try to print the stack and rename the file
 client.on('ready', () => {	
+	var timeInMilliseconds = process.hrtime(t0)[1]/1000000; // dividing by 1000000 gives milliseconds from nanoseconds
+	logger.info("Startup took " + timeInMilliseconds + " milliseconds.");
 	logger.info("Logged in as " + client.user.tag);
 	fs.readFile("./logs/crash.log", (err, data) => {
 		if(err) logger.warn("Could not read crash.log: " + err);
