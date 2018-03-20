@@ -100,7 +100,7 @@ function clockFormat(id) {
 	(hours + " tuntia " + minutes + " minuuttia " + seconds + " sekuntia");	
 }
 
-function showLeaderboard(message) {
+function showLeaderboard(message, client) {
 	var arr = sortLeaderboard();
 	var embed = {
 		"title": "**Ketaootetaan Leaderboard**",
@@ -124,7 +124,7 @@ function showLeaderboard(message) {
 	return;
 }
 
-function status(message) {
+function status(message, client) {
 	var statusList = [];
 	if (!Object.keys(waitingList).length > 0 ) {		        	
 		message.channel.send("Ketään ei ooteta.");
@@ -184,8 +184,8 @@ module.exports = {
 				leaderboard = JSON.parse(data);
 			} catch(err) {logger.error("Error parsing leaderboard_KO.json: " + err);}
 
-			if (args == "leaderboard") {showLeaderboard(message); return;}		
-			if (args == "status") {status(message); return;}
+			if (args == "leaderboard") {showLeaderboard(message, client); return;}		
+			if (args == "status") {status(message, client); return;}
 
 			var mentioned_users = message.mentions.members;
 			
