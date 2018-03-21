@@ -136,7 +136,7 @@ function status(message, client) {
 	}	        
 }
 
-function handle_KO(mentioned_users, message) {
+function handle_KO(mentioned_users, message, client) {
 	for(let [snowflake, user] of mentioned_users) {				
 		let id = snowflake;				
 		if (user.voiceChannel !== undefined && message.member.voiceChannel.id == user.voiceChannel.id) {			
@@ -195,7 +195,7 @@ module.exports = {
 				message.channel.send("ei sitä komentoa noin käytetä");
 				return;
 			}
-			handle_KO(mentioned_users, message);
+			handle_KO(mentioned_users, message, client);
 		});
 	},
 };
