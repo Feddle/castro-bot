@@ -66,9 +66,9 @@ function sortLeaderboard() {
 
 function writeTime(id) {
 	if(id == undefined) {logger.warn("Error writing time to leaderboard_KO.json: id was undefined"); return;}
-    if (leaderboard[id] == undefined)
-		leaderboard[id] = "00:00:00";
-	var timeBefore = leaderboard[id].split(":");
+    if (leaderboard[id] == undefined) leaderboard[id] = "00:00:00";
+	var temp = JSON.parse(JSON.stringify(leaderboard));
+	var timeBefore = leaderboard[id].split(":");	
 	var seconds = parseInt(timeBefore[2]) + waitingList[id].time.seconds;
 	var minutes = parseInt(timeBefore[1]) + waitingList[id].time.minutes;
 	var hours = parseInt(timeBefore[0]) + waitingList[id].time.hours;
@@ -82,11 +82,11 @@ function writeTime(id) {
 	}
 	var timeAfter = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" +
 	(minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" +
-	(seconds > 9 ? seconds : "0" + seconds);
-	leaderboard[id] = timeAfter;
-	fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(leaderboard), (err) => {
+	(seconds > 9 ? seconds : "0" + seconds);	
+	temp[id] = timeAfter;			
+	fs.writeFile('./leaderboards/leaderboard_KO.json', JSON.stringify(temp), (err) => {
 		if (err) logger.error(err);		
-		else logger.info("Wrote " + JSON.stringify(leaderboard) + "to leaderboard_KO.json");
+		else logger.info("Wrote " + JSON.stringify(temp) + " to leaderboard_KO.json");
 	});
 }
 
@@ -99,6 +99,7 @@ function clockFormat(id) {
 	
 	output = hours == "00" ? (minutes == "00" ? seconds + " sekuntia" : minutes + " minuuttia " + seconds + " sekuntia") : 
 	(hours + " tuntia " + minutes + " minuuttia " + seconds + " sekuntia");	
+	return output;
 }
 
 function showLeaderboard(message, client) {
@@ -155,19 +156,18 @@ function handle_KO(mentioned_users, message, client) {
 
 		client.on('voiceStateUpdate', listener = (oldMember, newMember) => {
 			logger.info("[EVENT] voiceStateUpdate");
-			let newUserChannel = newMember.voiceChannel
-				let oldUserChannel = oldMember.voiceChannel
-
-				if (oldUserChannel === undefined && newUserChannel !== undefined) {
-					if (newUserChannel.members.get(id)) {
-						stop(id);
-						message.channel.send("henkilöä " + user.user.username + " ootettiin joku " + clockFormat(id));
-						clearInterval(interval);
-						writeTime(id);
-						clear(id);
-						client.removeListener("voiceStateUpdate", listener);
-					}
+			let newUserChannel = newMember.voiceChannel;
+			let oldUserChannel = oldMember.voiceChannel;
+			if (oldUserChannel === undefined && newUserChannel !== undefined) {
+				if (newUserChannel.members.get(id)) {
+					stop(id);					
+					message.channel.send("henkilöä " + user.user.username + " ootettiin joku " + clockFormat(id));
+					clearInterval(interval);
+					writeTime(id);
+					clear(id);
+					client.removeListener("voiceStateUpdate", listener);
 				}
+			}
 		});
 	}
 }

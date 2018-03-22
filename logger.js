@@ -10,11 +10,20 @@ var logLevels = {
       warn: 3,
       error: 4,
       critical: 5
+  },
+  colors: {
+    trace: 'white',
+    debug: 'cyan',
+    info: 'green',
+    warn: 'gray',
+    error: 'red',
+    critical: 'red'
   }
 };
 
 const logger = new (winston.Logger)({  
-    levels: logLevels.levels,  
+    levels: logLevels.levels,
+    colors: logLevels.colors,  
     transports: [
       new (winston.transports.File)({
         name: 'combined',
