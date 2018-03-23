@@ -121,7 +121,7 @@ function showLeaderboard(message, client) {
 			"name": "#" + (i + 1),
 			"value": username + " - " + Object.values(arr[i])[0]
 		});
-	}
+	}	
 	message.channel.send({embed});
 	return;
 }
