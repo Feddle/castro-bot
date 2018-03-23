@@ -104,7 +104,7 @@ module.exports = {
 		var twitchUser = sentence[1];
 
 		getStreamer(twitchUser)
-		.then(embed => message.channel.send({embed}))
+		.then(embed => {return message.channel.send({embed});})
 		.catch(error => {
 			logger.error(error);
 			message.channel.send(error["message"])
