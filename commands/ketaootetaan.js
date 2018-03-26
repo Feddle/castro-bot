@@ -177,6 +177,7 @@ module.exports = {
 	name: 'ketaootetaan',
 	description: 'KETÄ OOTETAAN?',
 	aliases: ["ke"],
+	usage: "[user]",
 	execute(message, args, client) {
 		fs.readFile("./leaderboards/leaderboard_KO.json", (err, data) => {
 			if (err) logger.error("Error reading leaderboard_KO.json: " + err);
@@ -185,6 +186,7 @@ module.exports = {
 				leaderboard = JSON.parse(data);
 			} catch(err) {logger.error("Error parsing leaderboard_KO.json: " + err);}
 
+			args = args.trim();
 			if (args == "leaderboard") {showLeaderboard(message, client); return;}		
 			if (args == "status") {status(message, client); return;}
 
