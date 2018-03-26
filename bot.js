@@ -57,11 +57,20 @@ client.on('ready', () => {
 var vitunRegex = /(vitun[\s]bot)/;
 var goodRegex = /(good[\s]bot)/;
 
-client.on('message', message => {		
-	if (message.content.toLowerCase().match(goodRegex))
+client.on('message', message => {
+	if(message.channel.id == "427803623892844544") {
+		if(message.attachments.size <= 0) message.delete();	
+		//giveCorgiMessageId -> DiscordAPIError: Cannot edit a message authored by another user				
+		return;
+	}		
+	if (message.content.toLowerCase().match(goodRegex)) {
 		replyHappy(message);
-	if (message.content.toLowerCase().match(vitunRegex))
+		return;
+	}
+	if (message.content.toLowerCase().match(vitunRegex)) {
 		replySad(message);
+		return;
+	}
 	if (!message.content.startsWith(prefix) || message.author.bot)
 		return;			
 
@@ -128,6 +137,20 @@ function replyTurpaas(message, reply) {
 		});
 	}
 }
+
+/*function giveCorgiMessageId() {
+	var corgi_ch = client.channels.get("427803623892844544");        
+        corgi_ch.fetchMessages({ limit: 2 })		
+		.then(messages => {			
+			let message_content = messages.last().content.split(" ");
+			let id = Number.parseInt(message_content[message_content.length - 1]) + 1;			
+			let new_content = message.content == "" ? id : " " + id;
+			message.edit(new_content)
+			.then(msg => logger.info(`Edited corgi message: ${msg}`))
+			.catch(err => {logger.error(err); return "Ongelma muokatessa corgi viestiä";});			
+		})
+		.catch(err => {logger.error(err); return "Ongelma muokatessa corgi viestiä";});	
+}*/
 
 function getRandomInt(max) {
 	return Math.floor(Math.random() * Math.floor(max));
