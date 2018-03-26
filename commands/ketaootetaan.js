@@ -185,8 +185,7 @@ module.exports = {
 			try {
 				leaderboard = JSON.parse(data);
 			} catch(err) {logger.error("Error parsing leaderboard_KO.json: " + err);}
-
-			args = args.trim();
+			
 			if (args == "leaderboard") {showLeaderboard(message, client); return;}		
 			if (args == "status") {status(message, client); return;}
 
