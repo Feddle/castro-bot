@@ -11,7 +11,7 @@ module.exports = {
         .then(messages => {
             var corgi_msg = messages.random();
             var corgi_attach = corgi_msg.attachments.first().url;
-            message.channel.send("", {files: [corgi_attach]});
+            return message.channel.send("", {files: [corgi_attach]});
         })
         .catch(err => {logger.error(err); return "Ei löytynyt corgi viestiä";});
 	},
