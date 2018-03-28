@@ -27,7 +27,8 @@ function getStreamer(twitchUser) {
 
 					embed = {
 						"title": game,
-						"description": status,     
+						"description": status, 
+						"color": 7032241,    
 						"thumbnail": {
 							"url": logo
 						},
@@ -72,7 +73,8 @@ function getChannel(twitchUser) {
 				var displayName = json["display_name"];				
 				var logo = json["logo"];
 				var embed = {
-					"description": displayName + " is offline",					  
+					"description": displayName + " is offline",
+					"color": 7032241,					  
 					"thumbnail": {
 						"url": logo
 					},
