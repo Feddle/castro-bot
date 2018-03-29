@@ -92,10 +92,12 @@ function writeTime(id) {
 
 function clockFormat(id) {
 	var output="";
-	var splitClock = waitingList[id].clock.split(':', 3);
+	var splitClock = waitingList[id].clock.split(':', 3);	
 	let hours = splitClock[0][0] == '0' ? splitClock[0][1] : splitClock[0];
 	let minutes = splitClock[1][0] == '0' ? splitClock[1][1] : splitClock[1];
 	let seconds = splitClock[2][0] == '0' ? splitClock[2][1] : splitClock[2];
+	hours = Number.parseInt(hours) > 0 ? hours : "00";
+	minutes = Number.parseInt(minutes) > 0 ? minutes : "00";
 	
 	output = hours == "00" ? (minutes == "00" ? seconds + " sekuntia" : minutes + " minuuttia " + seconds + " sekuntia") : 
 	(hours + " tuntia " + minutes + " minuuttia " + seconds + " sekuntia");	
