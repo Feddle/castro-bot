@@ -1,2 +1,4 @@
 # discord-stuff
-discord bots etc.
+needs a major rewrite
+
+soontm
