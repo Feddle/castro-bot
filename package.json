@@ -1,7 +1,7 @@
 {
   "name": "castro-bot",
   "version": "1.0.0",
-  "description": "first bot",
+  "description": "castro-bot",
   "main": "bot.js",
   "dependencies": {
     "discord.js": "^11.3.2",
@@ -19,7 +19,6 @@
   "author": "Eppu Peltonen, Teemu Seppälä, Mikko Jaakonsaari",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Ebeyz/discord-stuff/issues"
-  },
-  "homepage": "https://github.com/Ebeyz/discord-stuff#readme"
+    "url": "https://github.com/feddle/castro-bot"
+  }
 }
