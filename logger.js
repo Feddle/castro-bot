@@ -27,12 +27,12 @@ const logger = new (winston.Logger)({
   transports: [
     new (winston.transports.File)({
       name: "combined",
-      filename: "./logs/combined.log",
+      filename: __dirname+"/logs/combined.log",
       level: "critical"        
     }),
     new (winston.transports.File)({
       name: "crash",
-      filename: "./logs/crash.log",
+      filename: __dirname+"/logs/crash.log",
       level: "trace",
       handleExceptions: true,
       humanReadableUnhandledException: true
