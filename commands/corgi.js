@@ -8,10 +8,10 @@ module.exports = {
     let corgi_ch = client.channels.get("427803623892844544");        
 
     corgi_ch.fetchMessages()
-      .then(messages => {
-        let corgi_msg = messages.random();
+      .then(messages => {        
         let corgi_attach;
         while(!corgi_attach) {
+          let corgi_msg = messages.random();
           try {
             corgi_attach = corgi_msg.attachments.first().url;
           } catch(e) {logger.warn(e);}
