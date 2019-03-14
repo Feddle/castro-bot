@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const twitchClientID = "i5wia3qcsuevs5xv98u1bf4tc8ytng";
+const twitchClientID = require("../config.ini").twitchClientID;
 const logger = require("../logger.js");
 
 //Hakee annetun striimaajan
