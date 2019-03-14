@@ -179,7 +179,7 @@ module.exports = {
   name: "ketaootetaan",
   description: "KETÄ OOTETAAN?",
   aliases: ["ke"],
-  usage: "[user]",
+  usage: "!ke [userMention]\n!ke status\n!ke leaderboard",
   execute(message, args, client) {
     fs.readFile(__dirname +"/leaderboards/leaderboard_KO.json", (err, data) => {
       if (err) logger.error("Error reading leaderboard_KO.json: " + err);
