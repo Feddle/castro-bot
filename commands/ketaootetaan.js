@@ -181,7 +181,7 @@ module.exports = {
   aliases: ["ke"],
   usage: "!ke [userMention]\n!ke status\n!ke leaderboard",
   execute(message, args, client) {
-    fs.readFile(__dirname +"/leaderboards/leaderboard_KO.json", (err, data) => {
+    fs.readFile("../leaderboards/leaderboard_KO.json", (err, data) => {
       if (err) logger.error("Error reading leaderboard_KO.json: " + err);
       logger.info("Read file leaderboard_KO.json");
       try {
