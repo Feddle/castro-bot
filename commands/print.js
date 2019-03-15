@@ -15,8 +15,7 @@ module.exports = {
     const types = ["message", "user", "guild", "channel"];
     if(!types.includes(args[0])) {message.channel.send("ei sitä komentoa noin käytetä"); return;}  
 
-    let ch = message.channel.id;    
-    logger.debug(args);
+    let ch = message.channel.id;        
 
     getSnowflake(args, client, ch)
       .then(snowflake => getPastebin(snowflake))
