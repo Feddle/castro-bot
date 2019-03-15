@@ -1,6 +1,4 @@
 
-//ei taida onnistua koska user, message jne objetkeja ei saa muutettua stringiksi jotta voisi lähettää pastebiniin
-
 const logger = require("../logger.js");
 const axios = require("axios");
 const util = require("util");
