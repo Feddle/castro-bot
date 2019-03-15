@@ -5,6 +5,7 @@ const logger = require("../logger.js");
 const axios = require("axios");
 const util = require("util");
 const {pastebinKey} = require(__dirname + "/../config.json");
+const querystring = require("querystring");
 
 module.exports = {
   name: "print",
@@ -19,7 +20,7 @@ module.exports = {
 
     getSnowflake(args, client, ch)
       .then(snowflake => getPastebin(snowflake))
-      .then(link => {      
+      .then(link => {          
         if(link) message.channel.send(link);
         else logger.error("Pastebin link was empty");  
       });                          
@@ -37,29 +38,28 @@ async function getSnowflake(args, client, ch) {
   return await obj;
 }
 
-async function getPastebin(snowflake) {
-  const api = "https://pastebin.com/api/api_post.php";    
-  let snowflakeString = util.inspect(snowflake);
-  //logger.debug(snowflakeString);
-  let parameters = {
+async function getPastebin(snowflake) {  
+  let api = "https://pastebin.com/api/api_post.php";
+  let snowflakeString = util.inspect(snowflake);  
+  let parameters = {         
     api_dev_key: pastebinKey,
     api_option: "paste",
-    api_paste_code: "snowflakeString",
+    api_paste_code: snowflakeString,
     api_paste_format: "json",
     api_paste_private: 1,
-    api_paste_expire_date: "1D",
-    headers: {"content-type": "application/x-www-form-urlencoded"}
+    api_paste_expire_date: "1D",    
+    headers: {"Content-Type": "application/x-www-form-urlencoded"}
   };
-  let pastebin = axios.post(api, JSON.stringify(parameters))
-    .then(response => response)
-    .then(text => {pastebin = text; logger.debug(pastebin);});
+  let pastebin = axios.post(api, querystring.stringify(parameters))
+    .then(response => response.data)
+    .then(data => data);
 
   return await pastebin;
 }
 
 async function getMessage(id, client, ch) {
   let res = client.channels.get(ch).fetchMessage(id)
-    .then(message => res = message)
+    .then(message => message)
     .catch(err => {logger.error(err); return "Ei löytynyt viestiä";});
   return await res;
 }
