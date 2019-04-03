@@ -22,8 +22,9 @@ root
 You also need add these lines to your config.json:
 ```
 {
-    "prefix" : "DESIRED TOKEN FOR YOUR COMMANDS",
+    "prefix" : "DESIRED TOKEN FOR YOUR COMMANDS (eg. "!")",
     "token" : "YOUR DISCORD BOT TOKEN",
-    "twitchClientID": "YOUR TWITCH CLIENT ID"
+    "twitchClientID": "YOUR TWITCH CLIENT ID (for twitch command)",
+    "pastebinKey": "YOUR PASTEBIN DEV KEY (for print command)"
 }
 ```
