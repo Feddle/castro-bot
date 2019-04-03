@@ -19,6 +19,7 @@ lib-cov
 *.out
 *.pid
 *.gz
+*.nope
 
 pids
 logs

@@ -1,9 +1,10 @@
 {
   "name": "castro-bot",
-  "version": "1.0.3",
+  "version": "1.1.1",
   "description": "castro-bot",
   "main": "bot.js",
   "dependencies": {
+    "axios": "^0.18.0",
     "discord.js": "^11.3.2",
     "node-fetch": "^2.1.1",
     "winston": "^2.4.1"
