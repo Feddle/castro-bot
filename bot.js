@@ -65,11 +65,11 @@ var vitunRegex = /(vitun[\s]bot)/;
 var goodRegex = /(good[\s]bot)/;
 
 client.on("message", message => {
-  if (message.channel.id == "427803623892844544") {
+  /*if (message.channel.id == "427803623892844544") {
     if (message.attachments.size <= 0) message.delete();
     //giveCorgiMessageId -> DiscordAPIError: Cannot edit a message authored by another user
     return;
-  }
+  }*/
   if (message.content.toLowerCase().match(goodRegex)) {
     replyHappy(message);
     return;
