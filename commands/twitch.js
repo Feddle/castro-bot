@@ -100,7 +100,7 @@ module.exports = {
   name: "twitch",
   description: "fetches twitch channel link and states whether the streamer is online or not",
   args: true,
-  usage: "!twitch [twitchUser]",
+  usage: "[twitchUser]",
   execute(message, args) {
 
     // Extract twitch user from command

@@ -8,7 +8,7 @@ const querystring = require("querystring");
 module.exports = {
   name: "print",
   description: "Posts a pastebin link containing the discord.js object (message/user/guild/channel) of the given type for the given id.",
-  usage: "!print [type] [id]",
+  usage: "[type] [id]",
   execute(message, args, client) {  
     const types = ["message", "user", "guild", "channel"];
     if(!types.includes(args[0])) {message.channel.send("ei sitä komentoa noin käytetä"); return;}  
