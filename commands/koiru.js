@@ -3,6 +3,7 @@ const logger = require("../logger.js");
 module.exports = {
   name: "koiru",
   description: "posts a random koiru picture from dogehouse channel",
+  aliases: ["corgi"],
   usage: "",
   execute(message, args, client) {        
     let koiru_ch = client.channels.get("427803623892844544");        
