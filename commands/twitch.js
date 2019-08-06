@@ -2,7 +2,7 @@ const fetch = require("node-fetch");
 const {twitchClientID} = require(__dirname +"/../config.json");
 const logger = require("../logger.js");
 
-//Hakee annetun striimaajan
+//Fetch the givne streamer
 function getStreamer(twitchUser) {
   let streams = "https://api.twitch.tv/kraken/streams/" + twitchUser;
   let myInit = {
