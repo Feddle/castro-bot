@@ -4,8 +4,8 @@ const logger = require("../logger.js");
 
 //Hakee annetun striimaajan
 function getStreamer(twitchUser) {
-  var streams = "https://api.twitch.tv/kraken/streams/" + twitchUser;
-  var myInit = {
+  let streams = "https://api.twitch.tv/kraken/streams/" + twitchUser;
+  let myInit = {
     method: "GET",
     headers: {
       "Client-ID": twitchClientID
@@ -14,16 +14,16 @@ function getStreamer(twitchUser) {
   return fetch(streams, myInit)
     .then(
       function (response) {
-        var embed;		
+        let embed;		
         return response.json()
           .then(json => {
             if (response.ok && json["stream"] != null) {
               logger.info("Fetched twitch stream: " + twitchUser);
-              var link = json["stream"]["channel"]["url"];
-              var game = json["stream"]["game"];
-              var status = json["stream"]["channel"]["status"];
-              var displayName = json["stream"]["channel"]["display_name"];
-              var logo = json["stream"]["channel"]["logo"];				
+              let link = json["stream"]["channel"]["url"];
+              let game = json["stream"]["game"];
+              let status = json["stream"]["channel"]["status"];
+              let displayName = json["stream"]["channel"]["display_name"];
+              let logo = json["stream"]["channel"]["logo"];				
 
               embed = {
                 "title": game,
@@ -41,7 +41,7 @@ function getStreamer(twitchUser) {
 
               return embed;
             } else if (json["stream"] == null && json["_links"] != null) {
-              var name = json["_links"]["self"].split("/");
+              let name = json["_links"]["self"].split("/");
               return getChannel(name[name.length - 1]);
             } else {
               return Promise.reject(Object.assign({}, json, {
@@ -53,10 +53,10 @@ function getStreamer(twitchUser) {
       });
 }
 
-//Hakee annetun twitch kanavan
+//Fetch the given channel
 function getChannel(twitchUser) {
-  var channels = "https://api.twitch.tv/kraken/channels/" + twitchUser;
-  var myInit = {
+  let channels = "https://api.twitch.tv/kraken/channels/" + twitchUser;
+  let myInit = {
     method: "GET",
     headers: {
       "Client-ID": twitchClientID
@@ -65,15 +65,15 @@ function getChannel(twitchUser) {
   return fetch(channels, myInit)
     .then(
       function (response) {
-        var textResponse;
+        let textResponse;
         return response.json()
           .then(json => {
             if (response.ok && json["display_name"]) {
               logger.info("Fetched twitch channel: " + twitchUser);
-              var link = json["url"];
-              var displayName = json["display_name"];				
-              var logo = json["logo"];
-              var embed = {
+              let link = json["url"];
+              let displayName = json["display_name"];				
+              let logo = json["logo"];
+              let embed = {
                 "description": displayName + " is offline",
                 "url": link,
                 "color": 7032241,					  
@@ -104,8 +104,8 @@ module.exports = {
   execute(message, args) {
 
     // Extract twitch user from command
-    var sentence = message.content.split(" ");
-    var twitchUser = sentence[1];
+    let sentence = message.content.split(" ");
+    let twitchUser = sentence[1];
 
     getStreamer(twitchUser)
       .then(embed => {return message.channel.send({embed});})
