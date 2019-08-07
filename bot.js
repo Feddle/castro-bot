@@ -13,7 +13,6 @@ client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync(`${__dirname}/commands`);
 
 for (const file of commandFiles) {
-  // require the command file
   const command = require(`${__dirname}/commands/${file}`);
 
   // set a new item in the Collection
@@ -21,9 +20,6 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
-client.on('error', (e) => {
-  logger.error(e);
-});
 
 /**
  * Removes crash.log
@@ -144,15 +140,6 @@ async function handlePreviousCrash(channel) {
   }
 }
 
-client.on('ready', () => {
-  // dividing by 1000000 gives milliseconds from nanoseconds
-  const timeInMilliseconds = process.hrtime(t0)[1] / 1000000;
-  logger.info(`Startup took ${timeInMilliseconds} milliseconds.`);
-  logger.info(`Logged in as ${client.user.tag}`);
-
-  const crashReportChannel = '423839512666439692';
-  if (fs.existsSync(`${__dirname}/logs/crash.log`)) handlePreviousCrash(crashReportChannel);
-});
 
 /**
  * Returns random positive integer
@@ -220,6 +207,22 @@ function replySad(message) {
   message.channel.send(reply);
   setTimeout(replyTurpaas, 500, message, reply);
 }
+
+// Client Handlers
+
+client.on('error', (e) => {
+  logger.error(e);
+});
+
+client.on('ready', () => {
+  // dividing by 1000000 gives milliseconds from nanoseconds
+  const timeInMilliseconds = process.hrtime(t0)[1] / 1000000;
+  logger.info(`Startup took ${timeInMilliseconds} milliseconds.`);
+  logger.info(`Logged in as ${client.user.tag}`);
+
+  const crashReportChannel = '423839512666439692';
+  if (fs.existsSync(`${__dirname}/logs/crash.log`)) handlePreviousCrash(crashReportChannel);
+});
 
 client.on('message', (message) => {
   const vitunRegex = /(vitun[\s]bot)/;
