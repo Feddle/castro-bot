@@ -2,6 +2,11 @@ const fs = require('fs');
 const Discord = require('discord.js');
 
 const { prefix, token } = require(`${__dirname}/config.json`);
+
+/* Create /logs if it does not exist */
+const logPath = `${__dirname}/logs`;
+if (!fs.existsSync(logPath)) fs.mkdirSync(logPath);
+
 const logger = require(`${__dirname}/logger.js`);
 
 const t0 = process.hrtime();
@@ -9,6 +14,9 @@ const t0 = process.hrtime();
 
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
+
+const leaderboardsPath = `${__dirname}/leaderboards`;
+if (!fs.existsSync(leaderboardsPath)) fs.mkdirSync(leaderboardsPath);
 
 const commandFiles = fs.readdirSync(`${__dirname}/commands`);
 
