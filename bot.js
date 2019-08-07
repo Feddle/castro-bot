@@ -15,6 +15,7 @@ const t0 = process.hrtime();
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 
+/* Create /leaderboards if it does not exist */
 const leaderboardsPath = `${__dirname}/leaderboards`;
 if (!fs.existsSync(leaderboardsPath)) fs.mkdirSync(leaderboardsPath);
 
