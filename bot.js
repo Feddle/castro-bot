@@ -154,10 +154,76 @@ client.on('ready', () => {
   if (fs.existsSync(`${__dirname}/logs/crash.log`)) handlePreviousCrash(crashReportChannel);
 });
 
-const vitunRegex = /(vitun[\s]bot)/;
-const goodRegex = /(good[\s]bot)/;
+/**
+ * Returns random positive integer
+ * @todo if more fucntions like these are needed move this to utils.js
+ * @param {number} max - maximum value for the random integer
+ */
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+/**
+ * Replies to good bot
+ * @todo This and reply sad can propably be combined
+ * @param {Object} message message object that will be replied to
+ */
+function replyHappy(message) {
+  const castroE = client.emojis.find('name', 'castro').toString();
+  const arr = [':)', ':3', ';^)', castroE];
+  message.channel.send(arr[getRandomInt(arr.length)]);
+}
+
+/**
+ * Reply for, if user responded to replySad
+ * @todo Finish this doc
+ * @todo Check and maybe rewrite this
+ * @param {Object} message message object that will be replied to
+ * @param {string} reply
+ */
+function replyTurpaas(message, reply) {
+  if (reply === 'haluutko turpaas') {
+    const listener = (msg) => {
+      switch (msg.content) {
+        case 'en':
+          message.channel.send('saat silti');
+          client.removeListener('message', listener);
+          break;
+        case 'homo':
+          message.channel.send('ite oot');
+          client.removeListener('message', listener);
+          break;
+        default:
+          client.removeListener('message', listener);
+      }
+    };
+    client.on('message', listener);
+  }
+}
+
+/**
+ * Replies to vitun bot
+ * @param {Object} message - message object that will be replied to
+ */
+function replySad(message) {
+  const castroE = client.emojis.find('name', 'castro').toString();
+  const mullekoalatE = client.emojis.find('name', 'mullekoalat').toString();
+  const arr = [
+    ':(',
+    mullekoalatE,
+    ':3',
+    'haluutko turpaas',
+    'No ite vittu koodasit :D homo :Dd',
+    castroE,
+  ];
+  const reply = arr[getRandomInt(arr.length)];
+  message.channel.send(reply);
+  setTimeout(replyTurpaas, 500, message, reply);
+}
 
 client.on('message', (message) => {
+  const vitunRegex = /(vitun[\s]bot)/;
+  const goodRegex = /(good[\s]bot)/;
   if (message.content.toLowerCase().match(goodRegex)) {
     replyHappy(message);
     return;
@@ -197,53 +263,3 @@ client.on('message', (message) => {
 });
 
 client.login(token);
-
-function replyHappy(message) {
-  const castroE = client.emojis.find('name', 'castro').toString();
-  const arr = [':)', ':3', ';^)', castroE];
-  message.channel.send(arr[getRandomInt(arr.length)]);
-}
-
-function replySad(message) {
-  const castroE = client.emojis.find('name', 'castro').toString();
-  const mullekoalatE = client.emojis.find('name', 'mullekoalat').toString();
-  const arr = [
-    ':(',
-    mullekoalatE,
-    ':3',
-    'haluutko turpaas',
-    'No ite vittu koodasit :D homo :Dd',
-    castroE,
-  ];
-  const reply = arr[getRandomInt(arr.length)];
-  message.channel.send(reply);
-  setTimeout(replyTurpaas, 500, message, reply);
-}
-
-/* Reply for if user responded to replySad */
-/* TODO: This is not the way to make a chat bot */
-function replyTurpaas(message, reply) {
-  if (reply === 'haluutko turpaas') {
-    const listener = (msg) => {
-      switch (msg.content) {
-        case 'en':
-          message.channel.send('saat silti');
-          client.removeListener('message', listener);
-          break;
-        case 'homo':
-          message.channel.send('ite oot');
-          client.removeListener('message', listener);
-          break;
-        default:
-          client.removeListener('message', listener);
-      }
-    };
-    client.on('message', listener);
-  }
-}
-
-/* Returns random positive integer */
-/* TODO: if more fucntions like these are needed move this to utils.js */
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
