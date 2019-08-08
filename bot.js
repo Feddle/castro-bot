@@ -233,6 +233,10 @@ client.on('ready', () => {
   if (fs.existsSync(`${__dirname}/logs/crash.log`)) handlePreviousCrash(crashReportChannel);
 });
 
+/**
+ * Event handler for onMessage
+ * @todo divide this to separate message handler for commands and 'other'
+ */
 client.on('message', (message) => {
   const vitunRegex = /(vitun[\s]bot)/;
   const goodRegex = /(good[\s]bot)/;
