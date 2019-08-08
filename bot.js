@@ -1,4 +1,6 @@
 const fs = require('fs');
+
+const fsPromises = fs.promises;
 const Discord = require('discord.js');
 
 const { prefix, token } = require(`${__dirname}/config.json`);
@@ -29,10 +31,22 @@ for (const file of commandFiles) {
   client.commands.set(command.name, command);
 }
 
+/**
+ * Sends a message to channel
+ * @param {string} channel - channel id
+ * @param {string} err - msg string
+ */
+function sendChannelMsg(channel, msg) {
+  client.channels
+    .get(channel)
+    .send(msg);
+}
 
 /**
  * Removes crash.log
- * @return {Object} {err:} if error, else {}
+ * Does not report errors to channel like the other crashLog functions
+ * If crash log needs to be removed it could not be parsed therefore
+ * you should propably debug the problem anyway
  */
 function removeCrashLog() {
   logger.info('Removing crash.log');
@@ -40,10 +54,9 @@ function removeCrashLog() {
     if (err) {
       const errorMsg = `Could not remove crash.log: ${err}`;
       logger.error(errorMsg);
-      return { err: errorMsg };
+      return;
     }
     logger.info('Removed crash.log');
-    return {};
   });
 }
 
@@ -57,13 +70,9 @@ function parseCrashLog(data) {
   let crashStack;
   let errorMsg;
   try {
-    crashStack = JSON.parse(data).stack;
+    crashStack = JSON.parse(data.data).stack;
   } catch (err) {
     errorMsg = `Could not parse crash.log: ${err}`;
-    logger.error(errorMsg);
-    logger.debug(`crash.log: ${data}`);
-    removeCrashLog();
-
     return { err: errorMsg };
   }
   return { stack: crashStack };
@@ -74,35 +83,33 @@ function parseCrashLog(data) {
  * Returns error if unsuccesful
  * @return {Object} {err:} if error, else {data:}
  */
-function readCrashLog() {
-  fs.readFile(`${__dirname}/logs/crash.log`, (readErr, data) => {
-    if (readErr) {
-      const errorMsg = `Could not read crash.log: ${readErr}`;
-      logger.warn(errorMsg);
-      return { err: errorMsg };
-    }
-    return { data };
-  });
+async function readCrashLog() {
+  try {
+    const data = await fsPromises.readFile(`${__dirname}/logs/crash.log`);
+    const result = { data };
+    return result;
+  } catch (readErr) {
+    const errorMsg = `Could not read crash.log: ${readErr}`;
+    return { err: errorMsg };
+  }
 }
 
 /**
  * Renames crash.log to [date]-crash.log
  * @return {Object} {err:} if error, else {}
  */
-function renameCrashLog() {
+async function renameCrashLog() {
   const date = new Date().toISOString().replace(/:/g, '-');
-  fs.rename(
+  const err = await fsPromises.rename(
     `${__dirname}/logs/crash.log`,
     `${__dirname}/logs/${date}-crash.log`,
-    (err) => {
-      if (err) {
-        const errorMsg = `Error renaming crash.log: ${err}`;
-        logger.error(errorMsg);
-        return { err: errorMsg };
-      }
-      return {};
-    },
   );
+  if (err) {
+    const errorMsg = `Error renaming crash.log: ${err}`;
+    logger.error(errorMsg);
+    return { err: errorMsg };
+  }
+  return {};
 }
 
 /**
@@ -116,36 +123,30 @@ async function handlePreviousCrash(channel) {
   if (readResult.err) {
     logger.error(readResult.err);
     removeCrashLog();
-    client.channels
-      .get(channel)
-      .send(`crash.log was found but could not be read: ${readResult.err}`);
+    sendChannelMsg(channel, `crash.log was found but could not be read: ${readResult.err}`);
     return;
   }
+  if (readResult.data.length <= 0) return;
 
   /* Parse crash.log */
-  const parseResult = parseCrashLog();
+  const parseResult = parseCrashLog(readResult);
   if (parseResult.err) {
     logger.error(parseResult.err);
+    logger.debug('crash.log:\n%o', readResult);
     removeCrashLog();
-    client.channels
-      .get(channel)
-      .send(`crash.log was found but could not be parsed: ${parseResult.err}`);
+    sendChannelMsg(channel, `crash.log was found but could not be parsed: \n${parseResult.err}`);
     return;
   }
 
   /* Report stack */
-  client.channels
-    .get(channel)
-    .send(`Kaadoit botin, tässä pino: \n\`\`\`\n${parseResult.stack}\`\`\``);
+  sendChannelMsg(channel, `Castro crashed, here's the stack: \n\`\`\`\n${parseResult.stack}\`\`\``);
 
   /* Rename crash.log */
   const renameResult = renameCrashLog();
   if (renameResult.err) {
     logger.error(renameResult.err);
     removeCrashLog();
-    client.channels
-      .get(channel)
-      .send(`crash.log was found but could not be renamed: ${renameResult.err}`);
+    sendChannelMsg(channel, `crash.log could not be renamed: ${renameResult.err}`);
   }
 }
 
