@@ -1,53 +1,76 @@
 
-const winston = require("winston");
+const { createLogger, format, transports } = require('winston');
 
-//transport with level critical logs all, debug logs debug and trace etc.
-var logLevels = {
+/* const {
+  combine, timestamp, label, printf,
+} = format; */
+
+// transport with level error logs only error, debug logs everything except trace etc.
+const logLevels = {
   levels: {
-    trace: 0,
-    debug: 1,
+    error: 0,
+    warn: 1,
     info: 2,
-    warn: 3,
-    error: 4,
-    critical: 5
+    verbose: 3,
+    debug: 4,
+    trace: 5,
   },
   colors: {
-    trace: "white",
-    debug: "cyan",
-    info: "green",
-    warn: "gray",
-    error: "red",
-    critical: "red"
-  }
+    error: 'red',
+    warn: 'yellow',
+    info: 'green',
+    verbose: 'blue',
+    debug: 'cyan',
+    trace: 'white',
+  },
 };
 
-const logger = new (winston.Logger)({  
+
+const coloredFormat = format.combine(
+  format.colorize(),
+  format.timestamp(),
+  format.align(),
+  format.splat(),
+  format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+);
+
+const noColorFormat = format.combine(
+  format.timestamp(),
+  format.align(),
+  format.errors({ stack: true }),
+  format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+);
+
+const jsonFormat = format.combine(
+  format.timestamp(),
+  format.align(),
+  format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
+  format.json(),
+);
+
+const logger = createLogger({
   levels: logLevels.levels,
-  colors: logLevels.colors,  
   transports: [
-    new (winston.transports.File)({
-      name: "combined",
-      filename: __dirname+"/logs/combined.log",
-      level: "critical"        
+    new transports.File({
+      name: 'combined',
+      filename: `${__dirname}/logs/combined.log`,
+      level: 'info',
+      format: noColorFormat,
     }),
-    new (winston.transports.File)({
-      name: "crash",
-      filename: __dirname+"/logs/crash.log",
-      level: "trace",
-      handleExceptions: true,
-      humanReadableUnhandledException: true
+    new transports.Console({
+      name: 'console',
+      level: 'trace',
+      format: coloredFormat,
     }),
-    new (winston.transports.Console)({
-      name: "console",
-      level: "critical",
-      prettyPrint: true,
-      timestamp: true,
-      colorize: true,
-      handleExceptions: true,
-      humanReadableUnhandledException: true        
-    })
-  ],    
+  ],
+  exceptionHandlers: [
+    new transports.File({
+      name: 'crash',
+      filename: `${__dirname}/logs/crash.log`,
+      level: 'error',
+      format: jsonFormat,
+    }),
+  ],
 });
 
 module.exports = logger;
-  
