@@ -1,9 +1,6 @@
 
 const { createLogger, format, transports } = require('winston');
 
-/* const {
-  combine, timestamp, label, printf,
-} = format; */
 
 // transport with level error logs only error, debug logs everything except trace etc.
 const logLevels = {
