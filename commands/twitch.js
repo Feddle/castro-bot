@@ -4,7 +4,7 @@ const configPath = `${__dirname}/../config.json`;
 const { twitchClientID } = require(configPath);
 const logger = require('../logger.js');
 
-const requestHeaders = {
+const requestConf = {
   method: 'GET',
   headers: {
     'Client-ID': twitchClientID,
@@ -13,143 +13,136 @@ const requestHeaders = {
 
 
 /**
- * Returns an embed representing a twitch stream
- * @param {Object} stream - twitch stream object
+ * Returns an embed representing a twitch channel
+ * @param {Object} stream - twitch response object
  * @returns {Object} discord embed object
  */
-function createEmbed(stream) {
-  const link = stream.channel.url;
-  const { game } = stream;
-  const { status } = stream.channel;
-  const displayName = stream.channel.display_name;
-  const { logo } = stream.channel;
+async function createEmbed(obj) {
+  const { stream, channel, game } = obj;
+  const url = `https://twitch.tv/${channel.display_name}`;
+  const status = stream.type ? stream.title : 'Offline';
+  const name = channel.display_name;
+  const logo = channel.profile_image_url;
 
   const embed = {
     title: game,
     description: status,
-    url: link,
+    url,
     color: 7032241,
     thumbnail: {
       url: logo,
     },
     author: {
-      name: displayName,
-      url: link,
+      name,
+      url,
     },
   };
   return embed;
 }
 
 /**
- * Returns an embed representing a twitch channel
- * @param {Object} channel - twitch channel object
- * @returns {Object} discord embed object
+ * Fetches twitch game name by id
+ * @param {string} gameId - twitch game_id
+ * @returns {string} name of the game
  */
-function createChannelEmbed(channel) {
-  const link = channel.url;
-  const displayName = channel.display_name;
-  const { logo } = channel;
-  const embed = {
-    description: `${displayName} is offline`,
-    url: link,
-    color: 7032241,
-    thumbnail: {
-      url: logo,
-    },
-    author: {
-      name: displayName,
-      url: link,
-    },
-  };
-  return embed;
+async function getGame(gameId) {
+  const games = `https://api.twitch.tv/helix/games?id=${gameId}`;
+  const request = { ...requestConf, url: games };
+
+  let gameResponse;
+  try {
+    gameResponse = await axios(request);
+  } catch (httpErr) {
+    logger.err(`Error fetching game: ${httpErr}`);
+    return { err: 'Error fetching game' };
+  }
+
+  const gameJson = gameResponse.data;
+  // If game was found
+  if (gameJson.data.length > 0) {
+    logger.info(`Fetched game: ${gameId}`);
+    return gameJson.data[0].name;
+  }
+
+  return { err: `Could not find game ${gameId}` };
 }
 
 /**
  * Fetches information about the given users channel
- * returns a discord embed object representing the channel
- * @todo Check the channel object and add a version of this to createEmbed
  * @param {string} twitchUser - twitch username
- * @returns {Object} discord embed object representing the streamer, {err:} if error occured
+ * @returns {Object} json representing the channel, {err} if error occured
  */
 async function getChannel(twitchUser) {
-  const channels = `https://api.twitch.tv/kraken/channels/${twitchUser}`;
-
-  const channelResponse = await axios(channels, requestHeaders);
-  let channelJson;
+  const channels = `https://api.twitch.tv/helix/users?login=${twitchUser}`;
+  const request = { ...requestConf, url: channels };
+  let channelResponse;
   try {
-    channelJson = JSON.parse(channelResponse);
-  } catch (parseErr) {
-    logger.error(`Error parsing channel response: ${parseErr}`);
-    return { err: parseErr };
+    channelResponse = await axios(request);
+  } catch (httpErr) {
+    logger.error(`Error fetching twitch channel: ${httpErr}`);
+    return { err: 'Error fetching twitch channel' };
   }
-
-  if (channelResponse.ok && channelJson.display_name) {
-    logger.info(`Fetched twitch channel: ${twitchUser}`);
-    const embed = createChannelEmbed(channelJson);
-    return embed;
-  }
-
-  const errObj = {
-    err: {
-      status: channelResponse.status,
-      statusText: channelResponse.statusText,
-    },
-  };
-  return errObj;
+  const channelJson = channelResponse.data;
+  return channelJson;
 }
 
 /**
  * Fetches information about the given users stream
- * returns a discord embed object representing the stream
- * if stream is down fetches the streamers channel information
  * @param {string} twitchUser - twitch username
- * @returns {Object} discord embed object representing the streamer, {err:} if error occured
+ * @returns {Object} json representing the stream, {err} if error occured
  */
 async function getStreamer(twitchUser) {
-  const streams = `https://api.twitch.tv/kraken/streams/'${twitchUser}`;
+  const streams = `https://api.twitch.tv/helix/streams?user_login=${twitchUser}`;
+  const request = { ...requestConf, url: streams };
 
-  const streamResponse = await axios(streams, requestHeaders);
-  let streamJson;
+  let streamResponse;
   try {
-    streamJson = JSON.parse(streamResponse);
-  } catch (parseErr) {
-    logger.error(`Error parsing stream response: ${parseErr}`);
-    return { err: parseErr };
+    streamResponse = await axios(request);
+  } catch (httpErr) {
+    logger.error(`Error fetching twitch stream: ${httpErr}`);
+    return { err: 'Error fetching twitch stream' };
   }
-  if (streamResponse.ok && streamJson.stream != null) {
-    logger.info(`Fetched twitch stream: ${twitchUser}`);
-    const embed = createEmbed(streamJson.stream);
-    return embed;
+  const streamJson = streamResponse.data;
+  return streamJson;
+}
+
+/**
+ * Handles fetching of twitch channel information and returns an embed object
+ * representing that channel
+ * @param {string} twitchUser - twitch user name
+ * @returns {Object} json representing discord embed
+ */
+async function handleCommand(twitchUser) {
+  const stream = await getStreamer(twitchUser);
+  const channel = await getChannel(twitchUser);
+
+  if (stream.err) return stream.err;
+  if (channel.err) return channel.err;
+
+  const twitchData = {};
+  if (channel.data.length > 0) [twitchData.channel] = channel.data;
+  else return { err: `Could not find channel ${twitchUser}` };
+
+  // If Stream is online
+  if (stream.data.length > 0) {
+    const game = await getGame();
+    twitchData.game = game.err ? '' : game;
+    [twitchData.stream] = stream.data;
   }
-  if (streamJson.stream == null && streamJson._links != null) {
-    const name = streamJson._links.self.split('/');
-    return getChannel(name[name.length - 1]);
-  }
-  const errObj = {
-    err: {
-      status: streamResponse.status,
-      statusText: streamResponse.statusText,
-    },
-  };
-  return errObj;
+  if (stream.data.length <= 0) twitchData.stream = {};
+  return createEmbed(twitchData);
 }
 
 module.exports = {
-  name: 'twitch',
+  name: 'twitch_test',
   description: 'Fetches a twitch streamer',
   args: true,
   usage: '[twitchUser]',
   execute(message, args) {
-    logger.debug(args);
-    // Extract twitch user from command
-    const sentence = message.content.split(' ');
-    const twitchUser = sentence[1];
-
-    const twitchEmbed = getStreamer(twitchUser);
-    if (!twitchEmbed.err) message.channel.send({ twitchEmbed });
-    else {
-      logger.warn(twitchEmbed.err);
-      message.channel.send(twitchEmbed); // TESTAA TÄMÄ
-    }
+    handleCommand(args)
+      .then((twitchEmbed) => {
+        if (!twitchEmbed.err) message.channel.send({ embed: twitchEmbed });
+        else message.channel.send(`\`\`\`${JSON.stringify(twitchEmbed)}\`\`\``);
+      });
   },
 };
