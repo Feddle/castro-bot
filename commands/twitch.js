@@ -134,7 +134,7 @@ async function handleCommand(twitchUser) {
 }
 
 module.exports = {
-  name: 'twitch_test',
+  name: 'twitch',
   description: 'Fetches a twitch streamer',
   args: true,
   usage: '[twitchUser]',
