@@ -3,7 +3,6 @@ const logger = require('../logger.js');
 
 /**
  * Fetches a random picture from given channel
- * @todo Tuntuu että tuo module.exports catch nappaa nyt errorin jos attachmenttiä ei löydy(?)
  * @param {string} - discord channel
  * @returns {Object} discord attachment
  */
