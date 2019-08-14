@@ -1,26 +1,31 @@
-const logger = require("../logger.js");
+const logger = require('../logger.js');
+
+
+/**
+ * Fetches a random picture from given channel
+ * @todo Tuntuu että tuo module.exports catch nappaa nyt errorin jos attachmenttiä ei löydy(?)
+ * @param {string} - discord channel
+ * @returns {Object} discord attachment
+ */
+async function getDogPic(channel) {
+  const messages = await channel.fetchMessages();
+  let dogAttachment;
+  while (!dogAttachment) {
+    const dogMsg = messages.random();
+    if (dogMsg.attachments.first()) dogAttachment = dogMsg.attachments.first().url;
+  }
+  return dogAttachment;
+}
 
 module.exports = {
-  name: "koiru",
-  description: "posts a random koiru picture from dogehouse channel",
-  aliases: ["corgi"],
-  usage: "",
-  execute(message, args, client) {        
-    let koiru_ch = client.channels.get("427803623892844544");        
-
-    koiru_ch.fetchMessages()
-      .then(messages => {        
-        let koiru_attach;
-        while(!koiru_attach) {
-          let koiru_msg = messages.random();
-          try {
-            koiru_attach = koiru_msg.attachments.first().url;
-          } catch(e) {logger.warn(e);}
-        }
-        return message.channel.send("", {files: [koiru_attach]});
-      })
-      .catch(err => {logger.error(err); return "Ei löytynyt koiru viestiä";});
+  name: 'koiru',
+  description: 'posts a random picture from dogehouse channel',
+  aliases: ['corgi'],
+  usage: '',
+  execute(message, args, client) {
+    const dogehouse = client.channels.get('427803623892844544');
+    getDogPic(dogehouse)
+      .then(pic => message.channel.send('', { files: [pic] }))
+      .catch((err) => { logger.error(err); message.channel.send('Ei löytynyt koirukuvaa.'); });
   },
 };
-
-
