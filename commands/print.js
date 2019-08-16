@@ -36,8 +36,14 @@ async function getSnowflake(args, client, ch) {
   return await obj;
 }
 
+/**
+ * Posts object to pastebin and returns the pastebin link
+ * @param {Object} snowflake - discord collection object, not really a discord snowflake
+ * @returns {string} url for the pasted object
+ */
 async function getPastebin(snowflake) {
   const api = 'https://pastebin.com/api/api_post.php';
+  // Muutetaan objecti luettavaan muotoon
   const snowflakeString = util.inspect(snowflake);
   const parameters = {
     api_dev_key: pastebinKey,
@@ -55,6 +61,13 @@ async function getPastebin(snowflake) {
   return await pastebin;
 }
 
+/**
+ * Fetches message by given id and channel
+ * @param {string} id - message id
+ * @param {Object} client - discord client
+ * @param {string} ch - channel to search the message from
+ * @returns {Object} discord message
+ */
 async function getMessage(id, client, ch) {
   const res = client.channels.get(ch).fetchMessage(id)
     .then(message => message)
@@ -62,18 +75,36 @@ async function getMessage(id, client, ch) {
   return await res;
 }
 
+/**
+ * Fetches discord user by given id
+ * @param {string} id - discord user id
+ * @param {Object} client - discord client
+ * @returns {Object} discord user
+ */
 function getUser(id, client) {
   const user = client.users.get(id);
   if (!user) return 'Ei löytynyt käyttäjää';
   return user;
 }
 
+/**
+ * Fetches discord guild (server) by given id
+ * @param {string} id - guild id
+ * @param {Object} client - discord client
+ * @returns {Object} discord guild
+ */
 function getGuild(id, client) {
   const guild = client.guilds.get(id);
   if (!guild) return 'Ei löytynyt kiltaa';
   return guild;
 }
 
+/**
+ * Fetches discord channel by given id
+ * @param {string} id - channel id
+ * @param {Object} client - discord client
+ * @returns {Object} discord channel
+ */
 function getChannel(id, client) {
   const channel = client.channels.get(id);
   if (!channel) return 'Ei löytynyt kanavaa';
